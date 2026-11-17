@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="BuildingDef" format=3]
+
+[ext_resource type="Texture2D" uid="uid://v8bykk2uonsw" path="res://assets/real/rudar.png" id="3_sprite"]
+[ext_resource type="Script" path="res://data/schema/port_def.gd" id="1_bv5y3"]
+[ext_resource type="Script" path="res://data/schema/building_def.gd" id="2_bykhy"]
+
+[sub_resource type="Resource" id="Resource_wtu1i"]
+script = ExtResource("1_bv5y3")
+source = 1
+
+[sub_resource type="Resource" id="Resource_eenls"]
+script = ExtResource("1_bv5y3")
+side = 0
+
+[resource]
+script = ExtResource("2_bykhy")
+display_name = "Rudar"
+description = "Postavi ga na rudo. Koplje število, na katerem stoji, in ga pošlje naprej."
+sprite = ExtResource("3_sprite")
+sprite_turns = 3
+symbol = "R"
+inputs = Array[ExtResource("1_bv5y3")]([SubResource("Resource_wtu1i")])
+outputs = Array[ExtResource("1_bv5y3")]([SubResource("Resource_eenls")])
+operation = &"mine"
+duration = 1.0

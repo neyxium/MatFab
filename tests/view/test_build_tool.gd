@@ -1,0 +1,200 @@
+extends GutTest
+
+const RIGHT := 1
+
+var sim: Simulation
+var tool: BuildTool
+
+
+func before_each() -> void:
+	sim = Simulation.from_level(Registry.levels[&"r1_01"], Registry.buildings)
+	tool = add_child_autofree(BuildTool.new())
+	tool.show_sim(sim, Registry.levels[&"r1_01"].buildable)
+
+
+func tap(cell: Vector2i) -> void:
+	tool.press(cell)
+	tool.release()
+
+
+# The first tap moves the preview to the cell, the second tap on the preview places it.
+func place_at(cell: Vector2i) -> void:
+	tap(cell)
+	tap(cell)
+
+
+func test_conveyor_drag_places_a_line_on_release() -> void:
+	tool.select_def(Registry.buildings[&"conveyor"])
+	tool.press(Vector2i(-6, 1))
+	tool.drag_to(Vector2i(-2, 1))
+	assert_eq(sim.buildings.size(), 1, "nothing places before release")
+	tool.release()
+	assert_eq(sim.buildings.size(), 6)
+	assert_eq(sim.building_at(Vector2i(-4, 1)).rotation, RIGHT)
+
+
+func test_conveyor_stays_selected_and_miner_drops() -> void:
+	tool.select_def(Registry.buildings[&"conveyor"])
+	tap(Vector2i(-6, 1))
+	assert_true(tool.has_tool())
+	tool.select_def(Registry.buildings[&"miner"])
+	place_at(Vector2i(6, 3))
+	assert_false(tool.has_tool())
+	assert_eq(sim.building_at(Vector2i(6, 3)).def.id, &"miner")
+
+
+func test_cancel_places_nothing() -> void:
+	tool.select_def(Registry.buildings[&"conveyor"])
+	tool.press(Vector2i(-6, 1))
+	tool.drag_to(Vector2i(-3, 1))
+	tool.cancel_gesture()
+	tool.release()
+	assert_eq(sim.buildings.size(), 1)
+
+
+func test_selecting_the_active_slot_drops_the_tool() -> void:
+	tool.select_slot(1)
+	assert_true(tool.has_tool())
+	tool.select_slot(1)
+	assert_false(tool.has_tool())
+
+
+func test_call_for_maps_a_trailing_number_to_the_argument() -> void:
+	var slot_call := tool._call_for("select_slot_3")
+	assert_eq(slot_call.get_method(), &"select_slot")
+	assert_eq(slot_call.get_bound_arguments(), [3])
+	var rotate_call := tool._call_for("rotate_cw")
+	assert_eq(rotate_call.get_method(), &"rotate_cw")
+	assert_eq(rotate_call.get_bound_arguments(), [])
+
+
+func test_every_build_action_has_a_function() -> void:
+	for action in InputMap.get_actions():
+		if String(action).begins_with(BuildTool.SHORTCUT_PREFIX):
+			var shortcut := String(action).trim_prefix(BuildTool.SHORTCUT_PREFIX)
+			assert_true(tool.has_method(tool._call_for(shortcut).get_method()), "action %s" % action)
+
+
+func test_each_def_keeps_its_own_last_rotation() -> void:
+	tool.select_def(Registry.buildings[&"conveyor"])
+	tool.rotate_cw()
+	tool.rotate_cw()
+	tool.select_def(Registry.buildings[&"miner"])
+	assert_eq(tool.tool_rotation(), 0)
+	tool.rotate_cw()
+	tool.select_def(Registry.buildings[&"conveyor"])
+	assert_eq(tool.tool_rotation(), 2)
+	tool.select_def(Registry.buildings[&"miner"])
+	assert_eq(tool.tool_rotation(), 1)
+
+
+func test_rotation_places_the_tool_turned() -> void:
+	tool.select_def(Registry.buildings[&"miner"])
+	tool.rotate_cw()
+	place_at(Vector2i(6, 4))
+	assert_eq(sim.building_at(Vector2i(6, 4)).rotation, 1)
+
+
+func test_tap_on_a_building_of_the_same_def_rotates_it() -> void:
+	tool.select_def(Registry.buildings[&"conveyor"])
+	tap(Vector2i(-5, 2))
+	tap(Vector2i(-5, 2))
+	assert_eq(sim.building_at(Vector2i(-5, 2)).rotation, 1)
+	assert_eq(sim.buildings.size(), 2)
+
+
+func test_contexts_follow_the_tool() -> void:
+	assert_eq(tool.active_contexts(), [ActionButtonDef.Context.ALWAYS] as Array[ActionButtonDef.Context])
+	tool.select_def(Registry.buildings[&"conveyor"])
+	assert_true(tool.active_contexts().has(ActionButtonDef.Context.CONVEYOR_TOOL))
+	tool.select_def(Registry.buildings[&"miner"])
+	assert_false(tool.active_contexts().has(ActionButtonDef.Context.CONVEYOR_TOOL))
+	assert_true(tool.active_contexts().has(ActionButtonDef.Context.BUILDING_TOOL))
+
+
+func test_miner_drag_across_an_ore_patch_fills_only_the_ore() -> void:
+	tool.select_def(Registry.buildings[&"miner"])
+	tool.press(Vector2i(4, 4))
+	tool.drag_to(Vector2i(10, 4))
+	tool.release()
+	var miners := 0
+	for building in sim.buildings:
+		if building.def.id == &"miner":
+			miners += 1
+	assert_eq(miners, 3)
+
+
+func test_tool_drops_after_placing_unless_keep_placing() -> void:
+	tool.keep_placing = true
+	tool.select_def(Registry.buildings[&"miner"])
+	place_at(Vector2i(6, 3))
+	assert_true(tool.has_tool())
+	tool.keep_placing = false
+	place_at(Vector2i(7, 3))
+	assert_false(tool.has_tool())
+
+
+func test_straight_line_keeps_a_conveyor_drag_on_one_row() -> void:
+	tool.straight_line = true
+	tool.select_def(Registry.buildings[&"conveyor"])
+	tool.press(Vector2i(-6, 5))
+	tool.drag_to(Vector2i(-5, 5))
+	tool.drag_to(Vector2i(-3, 7))
+	tool.release()
+	assert_not_null(sim.building_at(Vector2i(-3, 5)))
+	assert_null(sim.building_at(Vector2i(-3, 7)))
+
+
+func test_a_tap_moves_the_preview_without_placing() -> void:
+	tool.select_def(Registry.buildings[&"miner"])
+	tap(Vector2i(7, 4))
+	assert_eq(tool.preview_cell, Vector2i(7, 4))
+	assert_eq(sim.buildings.size(), 1)
+	assert_true(tool.preview_fits())
+
+
+func test_a_tap_on_the_preview_places_it() -> void:
+	tool.select_def(Registry.buildings[&"miner"])
+	tap(Vector2i(7, 4))
+	tap(Vector2i(7, 4))
+	assert_eq(sim.building_at(Vector2i(7, 4)).def.id, &"miner")
+
+
+func test_place_button_places_the_preview_only_where_it_fits() -> void:
+	tool.select_def(Registry.buildings[&"miner"])
+	tap(Vector2i(-12, 8))
+	assert_false(tool.preview_fits(), "off ore")
+	tool.place_preview()
+	assert_eq(sim.buildings.size(), 1)
+	tap(Vector2i(8, 5))
+	tool.place_preview()
+	assert_eq(sim.building_at(Vector2i(8, 5)).def.id, &"miner")
+
+
+func test_rotate_turns_the_preview() -> void:
+	tool.select_def(Registry.buildings[&"sum"])
+	tap(Vector2i(-4, 6))
+	assert_eq(tool.preview_placements()[0].rotation, 0)
+	tool.rotate_cw()
+	assert_eq(tool.preview_placements()[0].rotation, 1)
+	assert_true(tool.preview_covers(Vector2i(-4, 6)))
+
+
+func test_the_preview_shows_until_a_drag_starts() -> void:
+	tool.select_def(Registry.buildings[&"miner"])
+	tap(Vector2i(6, 3))
+	assert_eq(tool.shown_ghosts().size(), 1)
+	tool.press(Vector2i(6, 3))
+	tool.drag_to(Vector2i(8, 3))
+	assert_eq(tool.shown_ghosts().size(), 3)
+	tool.release()
+	assert_eq(tool.preview_cell, Vector2i(8, 3), "the preview follows the end of the drag")
+
+
+func test_conveyors_place_on_a_tap_and_show_no_preview() -> void:
+	tool.select_def(Registry.buildings[&"conveyor"])
+	assert_false(tool.has_preview())
+	assert_eq(tool.shown_ghosts().size(), 0)
+	tap(Vector2i(-6, 6))
+	assert_eq(sim.building_at(Vector2i(-6, 6)).def.id, &"conveyor")
+	assert_true(tool.has_tool(), "the conveyor stays selected")

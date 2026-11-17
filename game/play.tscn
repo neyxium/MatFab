@@ -1,0 +1,36 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/play.gd" id="1_play"]
+[ext_resource type="PackedScene" path="res://view/world_view.tscn" id="2_world"]
+[ext_resource type="PackedScene" path="res://ui/hud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" path="res://ui/action_bar.tscn" id="4_bar"]
+[ext_resource type="PackedScene" path="res://ui/pause_menu.tscn" id="5_pause"]
+[ext_resource type="PackedScene" path="res://ui/level_complete.tscn" id="6_complete"]
+[ext_resource type="PackedScene" path="res://ui/tutorial_panel.tscn" id="7_tutorial"]
+[ext_resource type="PackedScene" path="res://ui/block_info_menu.tscn" id="8_info"]
+[ext_resource type="PackedScene" path="res://ui/preview_buttons.tscn" id="9_preview"]
+
+[node name="Play" type="Node"]
+script = ExtResource("1_play")
+
+[node name="WorldView" parent="." instance=ExtResource("2_world")]
+
+[node name="UiLayer" type="CanvasLayer" parent="."]
+
+[node name="Hud" parent="UiLayer" instance=ExtResource("3_hud")]
+
+[node name="ActionBar" parent="UiLayer" instance=ExtResource("4_bar")]
+
+[node name="TutorialPanel" parent="UiLayer" instance=ExtResource("7_tutorial")]
+visible = false
+
+[node name="BlockInfoMenu" parent="UiLayer" instance=ExtResource("8_info")]
+visible = false
+
+[node name="PreviewButtons" parent="UiLayer" instance=ExtResource("9_preview")]
+
+[node name="PauseMenu" parent="UiLayer" instance=ExtResource("5_pause")]
+visible = false
+
+[node name="LevelComplete" parent="UiLayer" instance=ExtResource("6_complete")]
+visible = false
