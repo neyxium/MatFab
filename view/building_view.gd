@@ -106,7 +106,13 @@ func draw_mothership_goal(mothership: BuildingState) -> void:
 	draw_circle(center, radius + 3.0, Color(0, 0, 0, 0.55))
 	draw_circle(center, radius, ItemView.number_color(goal))
 	var font := ThemeDB.fallback_font
-	draw_string(font, center + Vector2(-radius, GOAL_FONT_SIZE * 0.35), str(goal), HORIZONTAL_ALIGNMENT_CENTER, radius * 2.0, GOAL_FONT_SIZE, SYMBOL_COLOR)
+	var text := str(goal)
+	var font_size := GOAL_FONT_SIZE
+	var max_width := radius * 1.75
+	var text_width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+	if text_width > max_width:
+		font_size = int(font_size * max_width / text_width)
+	draw_string(font, center + Vector2(-radius, font_size * 0.35), text, HORIZONTAL_ALIGNMENT_CENTER, radius * 2.0, font_size, SYMBOL_COLOR)
 	var progress := "%d / %d" % [sim.tracker.progress(goal), sim.tracker.goals[goal]]
 	var progress_baseline := Vector2(rect.position.x, rect.end.y - rect.size.y * 0.1)
 	draw_string(font, progress_baseline, progress, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, GOAL_PROGRESS_FONT_SIZE, SYMBOL_COLOR)

@@ -1,6 +1,6 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" format=3 uid="uid://ss7kl7il3qf1"]
 
-[ext_resource type="Texture2D" path="res://assets/placeholder/slider_grabber.png" id="1_hd5yc"]
+[ext_resource type="Texture2D" uid="uid://dqnx86qhxsf80" path="res://assets/placeholder/slider_grabber.png" id="1_hd5yc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hjlch"]
 content_margin_left = 10.0
