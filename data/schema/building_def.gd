@@ -1,6 +1,6 @@
 class_name BuildingDef extends Resource
 
-enum Behavior { PROCESSOR, CONVEYOR, MOTHERSHIP }
+enum Behavior { PROCESSOR, CONVEYOR, MOTHERSHIP, SPLITTER, MERGER }
 
 @export var display_name := ""
 # What the block does, shown above the hotbar while it is the tool.

@@ -102,6 +102,8 @@ func goal_label(text: String) -> Label:
 
 
 func update_goal(number: int, count: int) -> void:
+	if not goal_rows.has(number):
+		return
 	var row := goal_rows[number]
 	var line := row.get_child(0)
 	var count_label: Label = line.get_child(1)

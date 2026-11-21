@@ -30,7 +30,7 @@ func _draw() -> void:
 		match building.def.behavior:
 			BuildingDef.Behavior.CONVEYOR:
 				draw_conveyor_number(building)
-			BuildingDef.Behavior.PROCESSOR:
+			BuildingDef.Behavior.PROCESSOR, BuildingDef.Behavior.SPLITTER, BuildingDef.Behavior.MERGER:
 				draw_processor_numbers(building)
 
 

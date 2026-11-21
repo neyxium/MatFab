@@ -38,6 +38,15 @@ func has_world(level_id: StringName) -> bool:
 	return FileAccess.file_exists(world_path(level_id))
 
 
+func clear_all() -> void:
+	if FileAccess.file_exists(progress_path()):
+		DirAccess.remove_absolute(progress_path())
+	var dir := DirAccess.open(root.path_join("worlds"))
+	if dir != null:
+		for file_name in dir.get_files():
+			dir.remove(file_name)
+
+
 # Every building except the mothership as [def_id, origin, rotation, inputs, outputs, timer], the goal counts, and elapsed seconds.
 func save_world(level_id: StringName, sim: Simulation, elapsed_time := 0.0) -> void:
 	DirAccess.make_dir_recursive_absolute(world_path(level_id).get_base_dir())

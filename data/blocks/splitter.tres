@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="BuildingDef" format=3]
+
+[ext_resource type="Script" path="res://data/schema/port_def.gd" id="1_port"]
+[ext_resource type="Script" path="res://data/schema/building_def.gd" id="2_building"]
+[ext_resource type="Texture2D" path="res://assets/real/cepilnik.png" id="3_sprite"]
+
+[sub_resource type="Resource" id="Resource_in0"]
+script = ExtResource("1_port")
+cell = Vector2i(0, 0)
+side = 2
+
+[sub_resource type="Resource" id="Resource_out0"]
+script = ExtResource("1_port")
+cell = Vector2i(0, 0)
+side = 0
+
+[sub_resource type="Resource" id="Resource_out1"]
+script = ExtResource("1_port")
+cell = Vector2i(1, 0)
+side = 0
+
+[resource]
+script = ExtResource("2_building")
+display_name = "Razporejevalec"
+description = "Razdeli 1 trak števil izmenično na dva output traka."
+symbol = "Y"
+sprite = ExtResource("3_sprite")
+behavior = 3
+size = Vector2i(2, 1)
+inputs = Array[ExtResource("1_port")]([SubResource("Resource_in0")])
+outputs = Array[ExtResource("1_port")]([SubResource("Resource_out0"), SubResource("Resource_out1")])
+duration = 0.25

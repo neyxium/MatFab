@@ -127,6 +127,18 @@ func close_level() -> void:
 	paused = false
 
 
+func reset_progress() -> void:
+	level = null
+	sim = null
+	elapsed_time = 0.0
+	paused = false
+	completed_levels.clear()
+	best_times.clear()
+	last_played = &""
+	seen_block_info.clear()
+	save_store.clear_all()
+
+
 static func format_time(seconds: float) -> String:
 	var total := maxi(0, int(seconds))
 	@warning_ignore("integer_division")

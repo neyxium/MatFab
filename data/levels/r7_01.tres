@@ -8,6 +8,8 @@
 [ext_resource type="Resource" path="res://data/blocks/multiply.tres" id="6_multiply"]
 [ext_resource type="Resource" path="res://data/blocks/square.tres" id="7_square"]
 [ext_resource type="Resource" path="res://data/blocks/cube.tres" id="8_cube"]
+[ext_resource type="Resource" path="res://data/blocks/splitter.tres" id="9_splitter"]
+[ext_resource type="Resource" path="res://data/blocks/merger.tres" id="10_merger"]
 
 [sub_resource type="Resource" id="Resource_ore0"]
 script = ExtResource("2_ore")
@@ -41,4 +43,4 @@ goals = Dictionary[int, int]({
 63: 5,
 360: 5
 })
-buildable = Array[ExtResource("3_building")]([ExtResource("4_conveyor"), ExtResource("5_miner"), ExtResource("6_multiply"), ExtResource("7_square"), ExtResource("8_cube")])
+buildable = Array[ExtResource("3_building")]([ExtResource("4_conveyor"), ExtResource("5_miner"), ExtResource("6_multiply"), ExtResource("7_square"), ExtResource("8_cube"), ExtResource("9_splitter"), ExtResource("10_merger")])

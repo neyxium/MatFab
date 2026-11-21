@@ -7,6 +7,7 @@ var rotation: int
 var inputs: Array = []
 var outputs: Array = []
 var timer := 0
+var next_output := 0
 
 
 func _init(building_def: BuildingDef, at: Vector2i, quarter_turns: int) -> void:

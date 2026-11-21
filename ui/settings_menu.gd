@@ -11,6 +11,18 @@ const ROW_HEIGHT := 72.0
 func _ready() -> void:
 	for def in Registry.settings_sorted:
 		rows.add_child(make_row(def))
+	var reset := Button.new()
+	reset.text = "Ponastavi napredek"
+	reset.focus_mode = Control.FOCUS_NONE
+	reset.custom_minimum_size = Vector2(340, ROW_HEIGHT)
+	reset.add_theme_font_size_override("font_size", LABEL_FONT_SIZE)
+	reset.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	reset.pressed.connect(func() -> void:
+		Game.reset_progress()
+		reset.text = "Napredek ponastavljen"
+		reset.disabled = true
+	)
+	rows.add_child(reset)
 	var back := Button.new()
 	back.text = "Nazaj"
 	back.focus_mode = Control.FOCUS_NONE

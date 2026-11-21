@@ -23,6 +23,8 @@ func _init(building_defs: Dictionary[StringName, BuildingDef], map_bounds: Rect2
 	behaviors[BuildingDef.Behavior.PROCESSOR] = ProcessorBehavior.new(self)
 	behaviors[BuildingDef.Behavior.MOTHERSHIP] = MothershipBehavior.new(self)
 	behaviors[BuildingDef.Behavior.CONVEYOR] = ConveyorBehavior.new(self)
+	behaviors[BuildingDef.Behavior.SPLITTER] = SplitterBehavior.new(self)
+	behaviors[BuildingDef.Behavior.MERGER] = MergerBehavior.new(self)
 
 
 # Every cell in level data is relative to the mothership, which sits at (0, 0).
