@@ -12,9 +12,11 @@ const SCREENS: Dictionary[StringName, String] = {
 var level: LevelDef
 var sim: Simulation
 var clock := SimClock.new()
+var elapsed_time := 0.0
 var paused := false
 # Filled from progress.sav by the save store; level select marks these levels.
 var completed_levels: Array[StringName] = []
+var best_times: Dictionary[StringName, float] = {}
 var last_played := &""
 var save_store := SaveStore.new()
 var autosave := AutosaveTimer.new()
@@ -27,6 +29,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var progress := save_store.load_progress()
 	completed_levels.assign(progress["completed"])
+	best_times.assign(progress["best_times"])
 	last_played = progress["last_played"]
 
 
@@ -35,8 +38,9 @@ func _physics_process(delta: float) -> void:
 
 
 func step_sim(delta: float) -> void:
-	if sim == null or paused:
+	if sim == null or paused or (sim.tracker != null and sim.tracker.is_complete()):
 		return
+	elapsed_time += delta
 	for step in clock.advance(delta):
 		sim.step()
 	if autosave.advance(delta):
@@ -78,8 +82,10 @@ func restart_level() -> void:
 func load_level(level_def: LevelDef, from_save: bool) -> void:
 	level = level_def
 	sim = Simulation.from_level(level, Registry.buildings)
+	elapsed_time = 0.0
 	if from_save and save_store.has_world(level.id):
 		save_store.load_world(level.id, sim)
+		elapsed_time = save_store.load_world_time(level.id)
 	clock = SimClock.new()
 	autosave.restart()
 	paused = false
@@ -96,6 +102,8 @@ func continue_level() -> LevelDef:
 func complete_level() -> void:
 	if not completed_levels.has(level.id):
 		completed_levels.append(level.id)
+	if not best_times.has(level.id) or elapsed_time < best_times[level.id]:
+		best_times[level.id] = elapsed_time
 	paused = true
 	save_world()
 	save_progress()
@@ -104,18 +112,31 @@ func complete_level() -> void:
 
 func save_world() -> void:
 	if sim != null:
-		save_store.save_world(level.id, sim)
+		save_store.save_world(level.id, sim, elapsed_time)
 
 
 func save_progress() -> void:
-	save_store.save_progress(completed_levels, last_played)
+	save_store.save_progress(completed_levels, last_played, best_times)
 
 
 func close_level() -> void:
 	save_world()
 	level = null
 	sim = null
+	elapsed_time = 0.0
 	paused = false
+
+
+static func format_time(seconds: float) -> String:
+	var total := maxi(0, int(seconds))
+	@warning_ignore("integer_division")
+	var hours := total / 3600
+	@warning_ignore("integer_division")
+	var minutes := (total % 3600) / 60
+	var secs := total % 60
+	if hours > 0:
+		return "%d:%02d:%02d" % [hours, minutes, secs]
+	return "%02d:%02d" % [minutes, secs]
 
 
 # On the play screen back is the screen's own: it drops the tool or selection first, then opens the pause menu.

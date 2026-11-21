@@ -6,6 +6,7 @@ signal info_pressed
 const GOAL_FONT_SIZE := 24
 const GOAL_ROW_WIDTH := 170
 const DONE_COLOR := Color("8fe388")
+const OVER_TIME_COLOR := Color("f08a6c")
 # One slot per buildable block, up to the ten number keys from 1 to 0.
 const SLOT_COUNT := 10
 const SLOT_SIZE := Vector2(64, 68)
@@ -21,9 +22,13 @@ var build_tool: BuildTool
 var slot_buttons: Dictionary[BuildingDef, Button] = {}
 # The block whose description is above the hotbar, or null.
 var info_def: BuildingDef
+var _target_time := 0.0
 
-@onready var goal_panel: PanelContainer = $GoalPanel
-@onready var goal_list: VBoxContainer = $GoalPanel/GoalList
+@onready var timer_panel: PanelContainer = $TopLeft/TimerPanel
+@onready var time_label: Label = $TopLeft/TimerPanel/TimerRows/TimeLabel
+@onready var best_time_label: Label = $TopLeft/TimerPanel/TimerRows/BestTimeLabel
+@onready var goal_panel: PanelContainer = $TopLeft/GoalPanel
+@onready var goal_list: VBoxContainer = $TopLeft/GoalPanel/GoalList
 @onready var toolbar: PanelContainer = $Toolbar
 @onready var slot_list: HBoxContainer = $Toolbar/Slots
 @onready var pause_button: Button = $PauseButton
@@ -35,6 +40,29 @@ var info_def: BuildingDef
 func _ready() -> void:
 	pause_button.pressed.connect(pause_pressed.emit)
 	info_button.pressed.connect(info_pressed.emit)
+
+
+func show_timer(target_time: float, best_time: float) -> void:
+	_target_time = target_time
+	BarStyle.style_panel(timer_panel)
+	timer_panel.visible = true
+	best_time_label.visible = best_time >= 0.0
+	if best_time_label.visible:
+		best_time_label.text = "Najboljši: %s" % Game.format_time(best_time)
+
+
+func update_timer(elapsed_time: float) -> void:
+	if not timer_panel.visible:
+		return
+	if _target_time > 0.0:
+		time_label.text = "%s / %s" % [Game.format_time(elapsed_time), Game.format_time(_target_time)]
+		if elapsed_time > _target_time:
+			time_label.add_theme_color_override("font_color", OVER_TIME_COLOR)
+		else:
+			time_label.remove_theme_color_override("font_color")
+	else:
+		time_label.text = Game.format_time(elapsed_time)
+		time_label.remove_theme_color_override("font_color")
 
 
 func show_goals(goal_tracker: GoalTracker) -> void:

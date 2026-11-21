@@ -13,6 +13,8 @@ extends Node
 func _ready() -> void:
 	world_view.show_sim(Game.sim, Game.clock, Game.level.buildable)
 	hud.show_goals(Game.sim.tracker)
+	hud.show_timer(Game.level.target_time, Game.best_times.get(Game.level.id, -1.0))
+	hud.update_timer(Game.elapsed_time)
 	hud.show_toolbar(world_view.build_tool)
 	hud.pause_pressed.connect(pause)
 	hud.info_pressed.connect(open_info)
@@ -24,14 +26,26 @@ func _ready() -> void:
 	pause_menu.settings_pressed.connect(Game.open.bind(&"settings"))
 	level_complete.main_menu_pressed.connect(Game.open.bind(&"main_menu"))
 	level_complete.restart_pressed.connect(Game.restart_level)
-	Game.level_completed.connect(level_complete.show)
-	Game.level_completed.connect(tutorial_panel.hide)
+	Game.level_completed.connect(_on_level_completed)
 	# The tutorial starts over on every visit; Preskoči hides it.
 	tutorial_panel.show_tutorial(Game.level.tutorial, Game.sim, world_view.build_tool)
 	if Game.sim.tracker.is_complete():
-		level_complete.show()
+		_on_level_completed()
 	elif Game.paused:
 		pause_menu.show()
+
+
+func _process(_delta: float) -> void:
+	hud.update_timer(Game.elapsed_time)
+
+
+func _on_level_completed() -> void:
+	var best: float = Game.best_times.get(Game.level.id, -1.0)
+	hud.show_timer(Game.level.target_time, best)
+	hud.update_timer(Game.elapsed_time)
+	level_complete.show_time(Game.elapsed_time, best, Game.level.target_time)
+	level_complete.show()
+	tutorial_panel.hide()
 
 
 # Back drops the tool or selection first; with neither, it opens the pause menu, and from there resumes.

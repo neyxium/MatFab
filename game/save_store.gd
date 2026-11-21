@@ -17,33 +17,42 @@ func world_path(level_id: StringName) -> String:
 	return root.path_join("worlds").path_join("%s.sav" % level_id)
 
 
-func save_progress(completed: Array[StringName], last_played: StringName) -> void:
-	write(progress_path(), {"completed": completed, "last_played": last_played})
+func save_progress(completed: Array[StringName], last_played: StringName, best_times: Dictionary[StringName, float] = {}) -> void:
+	write(progress_path(), {"completed": completed, "last_played": last_played, "best_times": best_times})
 
 
-# {"completed": Array[StringName], "last_played": StringName}; empty values without a file.
+# {"completed": Array[StringName], "last_played": StringName, "best_times": Dictionary[StringName, float]}; empty values without a file.
 func load_progress() -> Dictionary:
 	var stored: Variant = read(progress_path())
 	var completed: Array[StringName] = []
 	var last_played := &""
+	var best_times: Dictionary[StringName, float] = {}
 	if stored is Dictionary:
 		completed.assign(stored.get("completed", []))
 		last_played = stored.get("last_played", &"")
-	return {"completed": completed, "last_played": last_played}
+		best_times.assign(stored.get("best_times", {}))
+	return {"completed": completed, "last_played": last_played, "best_times": best_times}
 
 
 func has_world(level_id: StringName) -> bool:
 	return FileAccess.file_exists(world_path(level_id))
 
 
-# Every building except the mothership as [def_id, origin, rotation, inputs, outputs, timer], and the goal counts.
-func save_world(level_id: StringName, sim: Simulation) -> void:
+# Every building except the mothership as [def_id, origin, rotation, inputs, outputs, timer], the goal counts, and elapsed seconds.
+func save_world(level_id: StringName, sim: Simulation, elapsed_time := 0.0) -> void:
 	DirAccess.make_dir_recursive_absolute(world_path(level_id).get_base_dir())
 	var buildings: Array = []
 	for building in sim.buildings:
 		if building.def.behavior != BuildingDef.Behavior.MOTHERSHIP:
 			buildings.append([building.def.id, building.origin, building.rotation, building.inputs, building.outputs, building.timer])
-	write(world_path(level_id), {"buildings": buildings, "received": sim.tracker.received})
+	write(world_path(level_id), {"buildings": buildings, "received": sim.tracker.received, "elapsed_time": elapsed_time})
+
+
+func load_world_time(level_id: StringName) -> float:
+	var stored: Variant = read(world_path(level_id))
+	if stored is Dictionary:
+		return float(stored.get("elapsed_time", 0.0))
+	return 0.0
 
 
 # Loads onto a sim fresh from its level. Unknown def ids are skipped and slot arrays are resized to the

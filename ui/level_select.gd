@@ -24,7 +24,15 @@ func _ready() -> void:
 
 func _level_button(level: LevelDef) -> Button:
 	var button := Button.new()
-	button.text = level.title
+	var lines: PackedStringArray = [level.title]
+	var details: PackedStringArray = []
+	if Game.best_times.has(level.id):
+		details.append("Najboljši: %s" % Game.format_time(Game.best_times[level.id]))
+	if level.target_time > 0.0:
+		details.append("Cilj: %s" % Game.format_time(level.target_time))
+	if not details.is_empty():
+		lines.append("  |  ".join(details))
+	button.text = "\n".join(lines)
 	button.custom_minimum_size = LEVEL_BUTTON_SIZE
 	if Game.completed_levels.has(level.id):
 		button.add_theme_color_override("font_color", DONE_COLOR)

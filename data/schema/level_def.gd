@@ -6,6 +6,8 @@ class_name LevelDef extends Resource
 @export var ore_patches: Array[OrePatch] = []
 @export var goals: Dictionary[int, int] = {}
 @export var buildable: Array[BuildingDef] = []
+# Goal time v sekundah (0 ce nima goal time)
+@export var target_time := 0.0
 # Shown one step at a time in the tutorial panel; shared steps live in data/tutorial/.
 @export var tutorial: Array[TutorialStep] = []
 
