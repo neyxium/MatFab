@@ -37,4 +37,5 @@ func test_registry_controls_are_in_file_name_order() -> void:
 	sorted.sort()
 	assert_eq(ids, sorted)
 	assert_true(ids.has("01_rotate"))
-	assert_true(ids.has("13_center"))
+	assert_true(ids.has("12_redo"))
+	assert_false(ids.has("13_center"))

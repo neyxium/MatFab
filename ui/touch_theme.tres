@@ -1,6 +1,7 @@
 [gd_resource type="Theme" format=3 uid="uid://ss7kl7il3qf1"]
 
 [ext_resource type="Texture2D" uid="uid://dqnx86qhxsf80" path="res://assets/placeholder/slider_grabber.png" id="1_hd5yc"]
+[ext_resource type="FontFile" uid="uid://gaqivnor8iep" path="res://assets/fonts/Conthrax-SemiBold.otf" id="2_conthrax"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hjlch"]
 content_margin_left = 10.0
@@ -133,6 +134,7 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [resource]
+default_font = ExtResource("2_conthrax")
 default_font_size = 24
 Button/colors/font_color = Color(0.93333334, 0.9490196, 0.972549, 1)
 Button/colors/font_focus_color = Color(0.93333334, 0.9490196, 0.972549, 1)

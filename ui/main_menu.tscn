@@ -4,6 +4,63 @@
 [ext_resource type="Theme" path="res://ui/menu_theme.tres" id="2_theme"]
 [ext_resource type="Texture2D" path="res://assets/real/background.png" id="3_bg"]
 [ext_resource type="Script" path="res://ui/menu_belt.gd" id="4_belt"]
+[ext_resource type="Texture2D" uid="uid://dxehwi7ri1m3c" path="res://assets/real/play.png" id="5_play"]
+[ext_resource type="Texture2D" uid="uid://ybs2ti2ut4a3" path="res://assets/real/settings.png" id="6_settings"]
+[ext_resource type="Texture2D" uid="uid://cl6osnkci1hsx" path="res://assets/real/leave.png" id="7_leave"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tile_normal"]
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.42, 0.42, 0.42, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tile_hover"]
+bg_color = Color(0.08, 0.08, 0.1, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.68, 0.68, 0.68, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tile_pressed"]
+bg_color = Color(0.04, 0.04, 0.05, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.85, 0.85, 0.85, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tile_disabled"]
+bg_color = Color(0, 0, 0, 0.55)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.25, 0.25, 0.25, 0.6)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 1
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -64,20 +121,163 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 
-[node name="ContinueButton" type="Button" parent="Center/Column"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(520, 100)
+[node name="Buttons" type="HBoxContainer" parent="Center/Column"]
 layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="ContinueButton" type="Button" parent="Center/Column/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_tile_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tile_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tile_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_tile_disabled")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+
+[node name="Content" type="VBoxContainer" parent="Center/Column/Buttons/ContinueButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Center/Column/Buttons/ContinueButton/Content"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("5_play")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Center/Column/Buttons/ContinueButton/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 17
 text = "Nadaljuj"
+horizontal_alignment = 1
 
-[node name="PlayButton" type="Button" parent="Center/Column"]
+[node name="PlayButton" type="Button" parent="Center/Column/Buttons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(520, 100)
+custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
-text = "Igraj"
+theme_override_styles/normal = SubResource("StyleBoxFlat_tile_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tile_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tile_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_tile_disabled")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
 
-[node name="SettingsButton" type="Button" parent="Center/Column"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(520, 100)
+[node name="Content" type="VBoxContainer" parent="Center/Column/Buttons/PlayButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Center/Column/Buttons/PlayButton/Content"]
+custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("5_play")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Center/Column/Buttons/PlayButton/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 17
+text = "Stopnje"
+horizontal_alignment = 1
+
+[node name="SettingsButton" type="Button" parent="Center/Column/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_tile_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tile_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tile_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_tile_disabled")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+
+[node name="Content" type="VBoxContainer" parent="Center/Column/Buttons/SettingsButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Center/Column/Buttons/SettingsButton/Content"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("6_settings")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Center/Column/Buttons/SettingsButton/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 17
 text = "Nastavitve"
+horizontal_alignment = 1
+
+[node name="QuitButton" type="Button" parent="Center/Column/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_tile_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tile_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tile_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_tile_disabled")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+
+[node name="Content" type="VBoxContainer" parent="Center/Column/Buttons/QuitButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Center/Column/Buttons/QuitButton/Content"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("7_leave")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Center/Column/Buttons/QuitButton/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 17
+text = "Izhod"
+horizontal_alignment = 1

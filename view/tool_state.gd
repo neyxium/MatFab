@@ -30,6 +30,8 @@ var clipboard: Blueprint
 var blueprint: Blueprint
 # The block or blueprint waiting on the map to be placed; a tap moves it, a tap on it places it.
 var preview_cell := Vector2i.ZERO
+# Dragged conveyor path waiting for confirmation via the preview buttons.
+var preview_path_cells: Array[Vector2i] = []
 
 
 # Shift held on a keyboard counts as keep_placing, Ctrl held as straight_line.
@@ -59,10 +61,8 @@ func selected_buildings() -> Array[BuildingState]:
 
 func active_contexts() -> Array[ActionButtonDef.Context]:
 	var contexts: Array[ActionButtonDef.Context] = [ActionButtonDef.Context.ALWAYS]
-	if has_tool():
+	if has_tool() and not is_conveyor_tool():
 		contexts.append(ActionButtonDef.Context.BUILDING_TOOL)
-	if is_conveyor_tool():
-		contexts.append(ActionButtonDef.Context.CONVEYOR_TOOL)
 	if has_selection():
 		contexts.append(ActionButtonDef.Context.SELECTION)
 	if mode == Mode.BLUEPRINT:
@@ -80,15 +80,17 @@ func is_conveyor_tool() -> bool:
 	return has_tool() and tool_def.behavior == BuildingDef.Behavior.CONVEYOR
 
 
-# Conveyors are drawn with the finger, so they place directly and have no preview.
+# Both buildings (including conveyors) and blueprints show a preview until placed or dragged.
 func has_preview() -> bool:
-	return (mode == Mode.BUILD and not is_conveyor_tool()) or mode == Mode.BLUEPRINT
+	return mode == Mode.BUILD or mode == Mode.BLUEPRINT
 
 
 func preview_placements() -> Array[Placement]:
 	if mode == Mode.BLUEPRINT:
 		return blueprint.placements_at(blueprint_origin_under(preview_cell))
-	if mode == Mode.BUILD and not is_conveyor_tool():
+	if mode == Mode.BUILD:
+		if is_conveyor_tool() and preview_path_cells.size() > 1:
+			return placements_for(preview_path_cells)
 		var single: Array[Placement] = [Placement.new(tool_def.id, origin_under(preview_cell, tool_rotation()), tool_rotation())]
 		return single
 	return []
@@ -111,7 +113,7 @@ func preview_fits() -> bool:
 
 # The ghosts to draw: the drag while one runs, otherwise the preview.
 func shown_ghosts() -> Array[Placement]:
-	if gesture_active and (drag_cells.size() > 1 or is_conveyor_tool()):
+	if gesture_active and drag_cells.size() > 1:
 		return ghosts
 	return preview_placements()
 

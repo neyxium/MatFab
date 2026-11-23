@@ -17,6 +17,8 @@ func show_tool(tool: BuildTool, defs: Array[ActionButtonDef]) -> void:
 		child.queue_free()
 	buttons.clear()
 	for def in defs:
+		if def.shown_with.has(ActionButtonDef.Context.ALWAYS):
+			continue
 		var button := make_button(def)
 		button_list.add_child(button)
 		buttons[def] = button
@@ -50,3 +52,4 @@ func refresh() -> void:
 		buttons[def].visible = shown.has(def)
 		if def.toggles_property != &"":
 			buttons[def].set_pressed_no_signal(build_tool.get(def.toggles_property))
+	panel.visible = not shown.is_empty()

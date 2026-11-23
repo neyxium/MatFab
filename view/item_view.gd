@@ -5,6 +5,7 @@ const FONT_SIZE := 26
 const MIN_FONT_SIZE := 10
 const TEXT_COLOR := Color.WHITE
 const OUTLINE_COLOR := Color(0, 0, 0, 0.55)
+const FONT := preload("res://assets/fonts/Conthrax-SemiBold.otf")
 
 var sim: Simulation
 var clock: SimClock
@@ -65,4 +66,4 @@ func draw_number(at: Vector2, value: int, scale_factor: float) -> void:
 	var digits_scale := 0.5 if value >= 1000 else 0.65 if value >= 100 else 1.0
 	var font_size := int(FONT_SIZE * scale_factor * digits_scale)
 	var width := radius * 2.0
-	draw_string(ThemeDB.fallback_font, at + Vector2(-radius, font_size * 0.35), str(value), HORIZONTAL_ALIGNMENT_CENTER, width, font_size, TEXT_COLOR)
+	draw_string(FONT, at + Vector2(-radius, font_size * 0.35), str(value), HORIZONTAL_ALIGNMENT_CENTER, width, font_size, TEXT_COLOR)

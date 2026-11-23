@@ -4,6 +4,7 @@ const FILL_COLOR := Color("3c4a63")
 const BORDER_COLOR := Color("8fa3c7")
 const SYMBOL_COLOR := Color.WHITE
 const SYMBOL_FONT_SIZE := 34
+const FONT := preload("res://assets/fonts/Conthrax-SemiBold.otf")
 
 const BELT_STRAIGHT := preload("res://assets/real/belt_gor_dol.png")
 const BELT_TURN_RIGHT := preload("res://assets/real/belt_zavoj_desno.png")
@@ -46,7 +47,7 @@ func draw_placeholder(def: BuildingDef, origin: Vector2i, rotation: int, alpha: 
 		draw_rect(rect, BORDER_COLOR * tint * Color(1, 1, 1, alpha), false, 3.0)
 		var font_size := SYMBOL_FONT_SIZE * mini(size.x, size.y)
 		var baseline := rect.position + Vector2(0, rect.size.y * 0.5 + font_size * 0.35)
-		draw_string(ThemeDB.fallback_font, baseline, def.symbol, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, font_size, Color(SYMBOL_COLOR, alpha))
+		draw_string(FONT, baseline, def.symbol, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, font_size, Color(SYMBOL_COLOR, alpha))
 	var probe := BuildingState.new(def, origin, rotation)
 	for port in def.inputs:
 		if port.source == PortDef.Source.NEIGHBOR:
@@ -105,7 +106,7 @@ func draw_mothership_goal(mothership: BuildingState) -> void:
 	var radius := GOAL_RADIUS * Grid.CELL_SIZE
 	draw_circle(center, radius + 3.0, Color(0, 0, 0, 0.55))
 	draw_circle(center, radius, ItemView.number_color(goal))
-	var font := ThemeDB.fallback_font
+	var font := FONT
 	var text := str(goal)
 	var font_size := GOAL_FONT_SIZE
 	var max_width := radius * 1.75

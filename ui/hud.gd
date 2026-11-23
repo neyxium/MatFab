@@ -7,39 +7,69 @@ const GOAL_FONT_SIZE := 24
 const GOAL_ROW_WIDTH := 170
 const DONE_COLOR := Color("8fe388")
 const OVER_TIME_COLOR := Color("f08a6c")
-# One slot per buildable block, up to the ten number keys from 1 to 0.
-const SLOT_COUNT := 10
-const SLOT_SIZE := Vector2(64, 68)
-const SYMBOL_FONT_SIZE := 28
-const KEY_FONT_SIZE := 14
-# Room under a slot icon for its key number.
-const KEY_LABEL_ROOM := 20
-const KEY_COLOR := Color(1, 1, 1, 0.55)
+const SYMBOL_FONT_SIZE := 22
+
+# Mindustry-inspired build panel colors and layout.
+const PANEL_BG := Color(0, 0, 0, 0.92)
+const PANEL_BORDER := Color(0.28, 0.28, 0.28, 1)
+const ACTIVE_BORDER := Color("ffd37f")
+const SLOT_HOVER := Color(1, 1, 1, 0.12)
+const BLOCK_BUTTON_SIZE := Vector2(44, 44)
+const CATEGORY_BUTTON_SIZE := Vector2(44, 44)
+const TOOL_BUTTON_SIZE := Vector2(44, 44)
+const TOOL_ICON_ERASER := preload("res://assets/real/trash.png")
+const TOOL_ICON_SELECT := preload("res://assets/placeholder/icon_select.png")
+const TOOL_ICON_UNDO := preload("res://assets/real/undo.png")
+const TOOL_ICON_REDO := preload("res://assets/real/redo.png")
+const CATEGORY_ORDER: Array[StringName] = [&"production", &"conveyor", &"miner"]
+const CATEGORY_LABELS: Dictionary[StringName, String] = {
+	&"production": "Proizvodnja",
+	&"conveyor": "Transport",
+	&"miner": "Rudarji",
+}
+# Category icons; swap these textures anytime to change the 3 category tabs on the right.
+const CATEGORY_ICONS: Dictionary[StringName, Texture2D] = {
+	&"production": preload("res://assets/real/crafting.png"),
+	&"conveyor": preload("res://assets/real/distribution.png"),
+	&"miner": preload("res://assets/real/production.png"),
+}
 
 var tracker: GoalTracker
 var goal_rows: Dictionary[int, PanelContainer] = {}
 var build_tool: BuildTool
+var active_category: StringName = &"production"
+var category_defs: Dictionary[StringName, Array] = {}
+var category_buttons: Dictionary[StringName, Button] = {}
 var slot_buttons: Dictionary[BuildingDef, Button] = {}
-# The block whose description is above the hotbar, or null.
+var eraser_button: Button
+var select_button: Button
+# The block whose description is above the build panel, or null.
 var info_def: BuildingDef
 var _target_time := 0.0
+var goals_expanded := false
 
 @onready var timer_panel: PanelContainer = $TopLeft/TimerPanel
 @onready var time_label: Label = $TopLeft/TimerPanel/TimerRows/TimeLabel
 @onready var best_time_label: Label = $TopLeft/TimerPanel/TimerRows/BestTimeLabel
 @onready var goal_panel: PanelContainer = $TopLeft/GoalPanel
-@onready var goal_list: VBoxContainer = $TopLeft/GoalPanel/GoalList
-@onready var toolbar: PanelContainer = $Toolbar
-@onready var slot_list: HBoxContainer = $Toolbar/Slots
+@onready var goal_list: VBoxContainer = $TopLeft/GoalPanel/GoalLayout/GoalList
+@onready var goal_toggle: Button = $TopLeft/GoalPanel/GoalLayout/GoalToggle
+@onready var build_panel: PanelContainer = $BuildPanel
+@onready var selected_icon: TextureRect = $BuildPanel/Content/HeaderMargin/HeaderRow/SelectedIcon
+@onready var selected_name: Label = $BuildPanel/Content/HeaderMargin/HeaderRow/SelectedName
+@onready var help_button: Button = $BuildPanel/Content/HeaderMargin/HeaderRow/HelpButton
+@onready var block_grid: GridContainer = $BuildPanel/Content/Body/LeftColumn/BlocksMargin/BlockGrid
+@onready var tool_row: HBoxContainer = $BuildPanel/Content/Body/LeftColumn/ToolsMargin/ToolRow
+@onready var category_column: VBoxContainer = $BuildPanel/Content/Body/CategoriesMargin/CategoryColumn
 @onready var pause_button: Button = $PauseButton
-@onready var info_button: Button = $InfoButton
 @onready var block_info: PanelContainer = $BlockInfo
 @onready var block_info_text: Label = $BlockInfo/Text
 
 
 func _ready() -> void:
 	pause_button.pressed.connect(pause_pressed.emit)
-	info_button.pressed.connect(info_pressed.emit)
+	help_button.pressed.connect(info_pressed.emit)
+	goal_toggle.pressed.connect(_toggle_goals)
 
 
 func show_timer(target_time: float, best_time: float) -> void:
@@ -67,7 +97,10 @@ func update_timer(elapsed_time: float) -> void:
 
 func show_goals(goal_tracker: GoalTracker) -> void:
 	tracker = goal_tracker
+	goals_expanded = false
 	BarStyle.style_panel(goal_panel)
+	BarStyle.style_slot(goal_toggle)
+	goal_toggle.visible = tracker.goals.size() > 1
 	for child in goal_list.get_children():
 		child.queue_free()
 	goal_rows.clear()
@@ -76,7 +109,9 @@ func show_goals(goal_tracker: GoalTracker) -> void:
 		goal_list.add_child(row)
 		goal_rows[number] = row
 		update_goal(number, tracker.received.get(number, 0))
-	tracker.counted.connect(update_goal)
+	_refresh_goal_visibility()
+	if not tracker.counted.is_connected(update_goal):
+		tracker.counted.connect(update_goal)
 
 
 # A row shows the wanted number on the left and how many arrived on the right.
@@ -114,39 +149,220 @@ func update_goal(number: int, count: int) -> void:
 	if done:
 		for label: Label in line.get_children():
 			label.add_theme_color_override("font_color", DONE_COLOR)
+	_refresh_goal_visibility()
+
+
+func _toggle_goals() -> void:
+	goals_expanded = not goals_expanded
+	_refresh_goal_visibility()
+
+
+func _closest_goal() -> int:
+	var best_number := -1
+	var best_ratio := -1.0
+	var best_remaining := 0
+	var last_number := -1
+	for number in tracker.goals:
+		last_number = number
+		var target := tracker.goals[number]
+		var progress := tracker.progress(number)
+		if progress >= target:
+			continue
+		var ratio := float(progress) / float(maxi(1, target))
+		var remaining := target - progress
+		if best_number == -1 or ratio > best_ratio or (is_equal_approx(ratio, best_ratio) and remaining < best_remaining):
+			best_number = number
+			best_ratio = ratio
+			best_remaining = remaining
+	return best_number if best_number != -1 else last_number
+
+
+func _refresh_goal_visibility() -> void:
+	goal_toggle.text = "▲" if goals_expanded else "▼"
+	if goals_expanded:
+		for number in goal_rows:
+			goal_rows[number].visible = true
+		return
+	var primary := _closest_goal()
+	for number in goal_rows:
+		goal_rows[number].visible = (number == primary)
+
+
+static func category_for(def: BuildingDef) -> StringName:
+	if def.operation == &"mine" or def.id == &"miner":
+		return &"miner"
+	if def.behavior == BuildingDef.Behavior.CONVEYOR or def.behavior == BuildingDef.Behavior.SPLITTER or def.behavior == BuildingDef.Behavior.MERGER:
+		return &"conveyor"
+	return &"production"
+
+
+func _style_build_panel() -> void:
+	var panel_box := StyleBoxFlat.new()
+	panel_box.bg_color = PANEL_BG
+	panel_box.border_color = PANEL_BORDER
+	panel_box.set_border_width_all(4)
+	panel_box.corner_radius_top_left = 18
+	panel_box.corner_detail = 1
+	panel_box.set_content_margin_all(0)
+	build_panel.add_theme_stylebox_override("panel", panel_box)
+
+	var help_normal := StyleBoxFlat.new()
+	help_normal.bg_color = Color.BLACK
+	help_normal.border_color = PANEL_BORDER
+	help_normal.set_border_width_all(2)
+	help_normal.set_content_margin_all(4)
+	var help_hover := help_normal.duplicate()
+	help_hover.bg_color = SLOT_HOVER
+	var help_pressed := help_hover.duplicate()
+	help_pressed.border_color = ACTIVE_BORDER
+	help_button.add_theme_stylebox_override("normal", help_normal)
+	help_button.add_theme_stylebox_override("hover", help_hover)
+	help_button.add_theme_stylebox_override("pressed", help_pressed)
+	help_button.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+
+
+static func style_mindustry_button(button: Button) -> void:
+	button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = Color.TRANSPARENT
+	normal.set_border_width_all(0)
+	normal.set_content_margin_all(5)
+
+	var hover := normal.duplicate()
+	hover.bg_color = SLOT_HOVER
+
+	var pressed := hover.duplicate()
+	pressed.set_border_width_all(3)
+	pressed.border_color = ACTIVE_BORDER
+
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", pressed)
+	button.add_theme_stylebox_override("hover_pressed", pressed)
+	button.add_theme_stylebox_override("disabled", normal)
+	button.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
 
 func show_toolbar(tool: BuildTool) -> void:
 	build_tool = tool
-	BarStyle.style_panel(toolbar)
-	for child in slot_list.get_children():
+	_style_build_panel()
+
+	category_defs.clear()
+	for cat in CATEGORY_ORDER:
+		category_defs[cat] = []
+	for def in build_tool.buildable:
+		category_defs[category_for(def)].append(def)
+
+	for child in category_column.get_children():
 		child.queue_free()
-	slot_buttons.clear()
-	for i in mini(build_tool.buildable.size(), SLOT_COUNT):
-		var def := build_tool.buildable[i]
-		var button := make_slot(def, i + 1)
-		slot_list.add_child(button)
-		slot_buttons[def] = button
-	build_tool.state_changed.connect(refresh_toolbar)
+	category_buttons.clear()
+
+	for cat in CATEGORY_ORDER:
+		var button := Button.new()
+		button.focus_mode = Control.FOCUS_NONE
+		button.custom_minimum_size = CATEGORY_BUTTON_SIZE
+		button.toggle_mode = true
+		button.icon = CATEGORY_ICONS.get(cat)
+		button.expand_icon = true
+		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		button.tooltip_text = CATEGORY_LABELS.get(cat, String(cat))
+		style_mindustry_button(button)
+		if category_defs[cat].is_empty():
+			button.disabled = true
+			button.modulate.a = 0.35
+		button.pressed.connect(_select_category.bind(cat))
+		category_column.add_child(button)
+		category_buttons[cat] = button
+
+	active_category = &"production"
+	for cat in CATEGORY_ORDER:
+		if not category_defs[cat].is_empty():
+			active_category = cat
+			break
+
+	_rebuild_block_grid()
+	_build_tool_row()
+	if not build_tool.state_changed.is_connected(refresh_toolbar):
+		build_tool.state_changed.connect(refresh_toolbar)
 	refresh_toolbar()
 
 
-func make_slot(def: BuildingDef, slot: int) -> Button:
+func _build_tool_row() -> void:
+	for child in tool_row.get_children():
+		child.queue_free()
+	eraser_button = _make_tool_button(TOOL_ICON_ERASER, "Radirka", true, func() -> void:
+		if build_tool.mode == BuildTool.Mode.ERASE:
+			build_tool.drop_tool()
+		else:
+			build_tool.use_eraser()
+	)
+	select_button = _make_tool_button(TOOL_ICON_SELECT, "Označi", true, func() -> void:
+		if build_tool.mode == BuildTool.Mode.SELECT or build_tool.has_selection():
+			build_tool.selection = Rect2i()
+			build_tool.clipboard = null
+			build_tool.drop_tool()
+		else:
+			build_tool.use_selector()
+	)
+	_make_tool_button(TOOL_ICON_UNDO, "Razveljavi", false, build_tool.undo)
+	_make_tool_button(TOOL_ICON_REDO, "Uveljavi", false, build_tool.redo)
+
+
+func _make_tool_button(icon_tex: Texture2D, tip: String, toggle: bool, action: Callable) -> Button:
 	var button := Button.new()
 	button.focus_mode = Control.FOCUS_NONE
-	button.custom_minimum_size = SLOT_SIZE
-	BarStyle.style_slot(button, KEY_LABEL_ROOM)
-	button.add_child(key_label(slot))
+	button.custom_minimum_size = TOOL_BUTTON_SIZE
+	button.toggle_mode = toggle
+	button.icon = icon_tex
+	button.expand_icon = true
+	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.add_theme_constant_override("icon_max_width", 26)
+	button.tooltip_text = tip
+	style_mindustry_button(button)
+	button.pressed.connect(action)
+	tool_row.add_child(button)
+	return button
+
+
+func _select_category(cat: StringName) -> void:
+	active_category = cat
+	_rebuild_block_grid()
+	refresh_toolbar()
+
+
+func _rebuild_block_grid() -> void:
+	for child in block_grid.get_children():
+		child.queue_free()
+	slot_buttons.clear()
+	var defs: Array = category_defs.get(active_category, [])
+	for def: BuildingDef in defs:
+		var button := make_block_button(def)
+		block_grid.add_child(button)
+		slot_buttons[def] = button
+
+
+func make_block_button(def: BuildingDef) -> Button:
+	var button := Button.new()
+	button.focus_mode = Control.FOCUS_NONE
+	button.custom_minimum_size = BLOCK_BUTTON_SIZE
 	button.toggle_mode = true
 	button.tooltip_text = def.display_name
+	style_mindustry_button(button)
 	if def.sprite != null:
 		button.icon = def.sprite
 		button.expand_icon = true
 		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	else:
 		button.add_child(symbol_tile(def))
-	button.pressed.connect(build_tool.select_slot.bind(slot))
+	button.pressed.connect(_on_block_pressed.bind(def))
 	return button
+
+
+func _on_block_pressed(def: BuildingDef) -> void:
+	if build_tool.tool_def == def:
+		build_tool.drop_tool()
+	else:
+		build_tool.select_def(def)
 
 
 # Blocks without art yet show the same symbol tile they are drawn with on the grid.
@@ -164,32 +380,38 @@ func symbol_tile(def: BuildingDef) -> Label:
 	tile.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tile.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	tile.offset_left = 12
-	tile.offset_top = 8
-	tile.offset_right = -12
-	tile.offset_bottom = -22
+	tile.offset_left = 6
+	tile.offset_top = 6
+	tile.offset_right = -6
+	tile.offset_bottom = -6
 	return tile
 
 
-func key_label(slot: int) -> Label:
-	var label := Label.new()
-	label.text = str(slot % SLOT_COUNT)
-	label.add_theme_font_size_override("font_size", KEY_FONT_SIZE)
-	label.add_theme_color_override("font_color", KEY_COLOR)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	label.offset_top = -20
-	return label
-
-
 func refresh_toolbar() -> void:
+	if build_tool.tool_def != null:
+		var target_cat := category_for(build_tool.tool_def)
+		if target_cat != active_category:
+			active_category = target_cat
+			_rebuild_block_grid()
+	for cat in category_buttons:
+		category_buttons[cat].set_pressed_no_signal(cat == active_category)
 	for def in slot_buttons:
 		slot_buttons[def].set_pressed_no_signal(build_tool.tool_def == def)
+	if eraser_button != null:
+		eraser_button.set_pressed_no_signal(build_tool.mode == BuildTool.Mode.ERASE)
+	if select_button != null:
+		select_button.set_pressed_no_signal(build_tool.mode == BuildTool.Mode.SELECT or build_tool.has_selection())
+	if build_tool.tool_def != null:
+		selected_name.text = build_tool.tool_def.display_name
+		selected_icon.texture = build_tool.tool_def.sprite
+		selected_icon.visible = build_tool.tool_def.sprite != null
+	else:
+		selected_name.text = CATEGORY_LABELS.get(active_category, "")
+		selected_icon.visible = false
 	refresh_block_info()
 
 
-# The first time a block becomes the tool, a line above the hotbar says what it does until the tool changes.
+# The first time a block becomes the tool, a line above the bottom edge says what it does until the tool changes.
 # After that the Info window holds every description.
 func refresh_block_info() -> void:
 	var def := build_tool.tool_def

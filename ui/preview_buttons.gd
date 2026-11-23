@@ -14,6 +14,7 @@ var camera_rig: CameraRig
 
 @onready var rotate_button: Button = $Row/RotateButton
 @onready var place_button: Button = $Row/PlaceButton
+@onready var cancel_button: Button = $Row/CancelButton
 @onready var row: HBoxContainer = $Row
 
 
@@ -22,6 +23,7 @@ func show_tool(tool: BuildTool, camera: CameraRig) -> void:
 	camera_rig = camera
 	rotate_button.pressed.connect(build_tool.rotate_cw)
 	place_button.pressed.connect(build_tool.place_preview)
+	cancel_button.pressed.connect(build_tool.drop_tool)
 
 
 # Follows the preview every frame: centered above it, kept on screen, hidden while a drag runs.
@@ -33,7 +35,7 @@ func _process(_delta: float) -> void:
 	place_button.disabled = not build_tool.preview_fits()
 	var bounds := preview_bounds()
 	var top_center := camera_rig.world_to_screen(Vector2(bounds.get_center().x, bounds.position.y))
-	var size_needed := Vector2(BUTTON_SIZE.x * 2 + GAP, BUTTON_SIZE.y)
+	var size_needed := Vector2(BUTTON_SIZE.x * 3 + GAP * 2, BUTTON_SIZE.y)
 	var corner := top_center - Vector2(size_needed.x * 0.5, size_needed.y + LIFT)
 	var screen := get_viewport_rect().size
 	if corner.y < EDGE_MARGIN:

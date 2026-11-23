@@ -3,6 +3,7 @@ extends Control
 @onready var continue_button: Button = %ContinueButton
 @onready var play_button: Button = %PlayButton
 @onready var settings_button: Button = %SettingsButton
+@onready var quit_button: Button = %QuitButton
 @onready var title: Label = %Title
 
 
@@ -15,6 +16,7 @@ func _ready() -> void:
 	settings_button.disabled = not Game.SCREENS.has(&"settings")
 	play_button.pressed.connect(Game.open.bind(&"level_select"))
 	settings_button.pressed.connect(Game.open.bind(&"settings"))
+	quit_button.pressed.connect(get_tree().quit)
 
 
 func _breathe(label: Label) -> void:

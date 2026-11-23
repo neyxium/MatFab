@@ -51,6 +51,7 @@ func show_sim(simulation: Simulation, buildable_defs: Array[BuildingDef]) -> voi
 
 func select_def(def: BuildingDef) -> void:
 	cancel_gesture()
+	preview_path_cells.clear()
 	tool_def = def
 	mode = Mode.BUILD
 	preview_cell = view_center_cell()
@@ -59,6 +60,7 @@ func select_def(def: BuildingDef) -> void:
 
 func drop_tool() -> void:
 	cancel_gesture()
+	preview_path_cells.clear()
 	tool_def = null
 	blueprint = null
 	mode = Mode.NONE
@@ -79,6 +81,7 @@ func cancel() -> bool:
 
 func use_selector() -> void:
 	cancel_gesture()
+	preview_path_cells.clear()
 	tool_def = null
 	mode = Mode.SELECT
 	state_changed.emit()
@@ -112,6 +115,7 @@ func paste() -> void:
 	if clipboard == null:
 		return
 	cancel_gesture()
+	preview_path_cells.clear()
 	tool_def = null
 	blueprint = clipboard
 	mode = Mode.BLUEPRINT
@@ -121,6 +125,7 @@ func paste() -> void:
 
 func use_eraser() -> void:
 	cancel_gesture()
+	preview_path_cells.clear()
 	tool_def = null
 	mode = Mode.ERASE
 	state_changed.emit()
@@ -164,6 +169,10 @@ func rotate_tool(quarter_turns: int) -> void:
 		state_changed.emit()
 		return
 	if not has_tool():
+		return
+	if is_conveyor_tool() and preview_path_cells.size() > 1:
+		conveyors_flipped = not conveyors_flipped
+		state_changed.emit()
 		return
 	rotations[tool_def.id] = posmod(tool_rotation() + quarter_turns, 4)
 	if gesture_active:
@@ -225,6 +234,12 @@ func release() -> void:
 	if drag_cells.size() == 1:
 		release_tap(drag_cells[0])
 		return
+	if is_conveyor_tool():
+		preview_path_cells = DragPath.lock_to_axis(drag_cells) if keeps_straight_line() else drag_cells.duplicate()
+		preview_cell = preview_path_cells.back()
+		cancel_gesture()
+		state_changed.emit()
+		return
 	RecordedEdits.place_all(sim, history, ghosts)
 	if ghosts.size() > 0:
 		rotations[tool_def.id] = ghosts.back().rotation
@@ -234,27 +249,30 @@ func release() -> void:
 		drop_tool()
 
 
-# A tap on a block of the tool's def turns it. Otherwise a conveyor places at once, and other blocks place
-# when the tap is on the preview and move the preview there when it is not.
+# A tap on a block of the tool's def turns it. Otherwise a tap on the preview places it and a tap elsewhere
+# moves the preview there (while dragging across cells previews a conveyor line until confirmed).
 func release_tap(cell: Vector2i) -> void:
 	cancel_gesture()
 	if is_same_def_building(cell):
 		rotate_building(cell)
-	elif is_conveyor_tool():
-		RecordedEdits.place_all(sim, history, placements_for([cell] as Array[Vector2i]))
 	elif preview_covers(cell):
 		place_preview()
 	else:
+		preview_path_cells.clear()
 		preview_cell = cell
 		state_changed.emit()
 
 
-# Places the preview when every part of it fits; the tool then drops as after any other placement.
+# Places the preview when every part of it fits; the tool then drops unless keep_placing is active.
 func place_preview() -> void:
 	if not has_preview() or not preview_fits():
 		return
-	RecordedEdits.place_all(sim, history, preview_placements())
-	if not (places_multiple() or (has_tool() and tool_def.keep_selected)):
+	var placed := preview_placements()
+	RecordedEdits.place_all(sim, history, placed)
+	if is_conveyor_tool() and not placed.is_empty():
+		rotations[tool_def.id] = placed.back().rotation
+	preview_path_cells.clear()
+	if not places_multiple():
 		drop_tool()
 	else:
 		state_changed.emit()

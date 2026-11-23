@@ -29,6 +29,9 @@ func test_conveyor_drag_places_a_line_on_release() -> void:
 	tool.drag_to(Vector2i(-2, 1))
 	assert_eq(sim.buildings.size(), 1, "nothing places before release")
 	tool.release()
+	assert_eq(sim.buildings.size(), 1, "drag previews until confirmed")
+	assert_eq(tool.preview_placements().size(), 5)
+	tool.place_preview()
 	assert_eq(sim.buildings.size(), 6)
 	assert_eq(sim.building_at(Vector2i(-4, 1)).rotation, RIGHT)
 
@@ -97,7 +100,8 @@ func test_rotation_places_the_tool_turned() -> void:
 
 func test_tap_on_a_building_of_the_same_def_rotates_it() -> void:
 	tool.select_def(Registry.buildings[&"conveyor"])
-	tap(Vector2i(-5, 2))
+	place_at(Vector2i(-5, 2))
+	tool.select_def(Registry.buildings[&"conveyor"])
 	tap(Vector2i(-5, 2))
 	assert_eq(sim.building_at(Vector2i(-5, 2)).rotation, 1)
 	assert_eq(sim.buildings.size(), 2)
@@ -106,7 +110,8 @@ func test_tap_on_a_building_of_the_same_def_rotates_it() -> void:
 func test_contexts_follow_the_tool() -> void:
 	assert_eq(tool.active_contexts(), [ActionButtonDef.Context.ALWAYS] as Array[ActionButtonDef.Context])
 	tool.select_def(Registry.buildings[&"conveyor"])
-	assert_true(tool.active_contexts().has(ActionButtonDef.Context.CONVEYOR_TOOL))
+	assert_false(tool.active_contexts().has(ActionButtonDef.Context.CONVEYOR_TOOL))
+	assert_false(tool.active_contexts().has(ActionButtonDef.Context.BUILDING_TOOL))
 	tool.select_def(Registry.buildings[&"miner"])
 	assert_false(tool.active_contexts().has(ActionButtonDef.Context.CONVEYOR_TOOL))
 	assert_true(tool.active_contexts().has(ActionButtonDef.Context.BUILDING_TOOL))
@@ -141,6 +146,7 @@ func test_straight_line_keeps_a_conveyor_drag_on_one_row() -> void:
 	tool.drag_to(Vector2i(-5, 5))
 	tool.drag_to(Vector2i(-3, 7))
 	tool.release()
+	tool.place_preview()
 	assert_not_null(sim.building_at(Vector2i(-3, 5)))
 	assert_null(sim.building_at(Vector2i(-3, 7)))
 
@@ -191,10 +197,13 @@ func test_the_preview_shows_until_a_drag_starts() -> void:
 	assert_eq(tool.preview_cell, Vector2i(8, 3), "the preview follows the end of the drag")
 
 
-func test_conveyors_place_on_a_tap_and_show_no_preview() -> void:
+func test_conveyors_show_preview_and_confirm_on_second_tap() -> void:
 	tool.select_def(Registry.buildings[&"conveyor"])
-	assert_false(tool.has_preview())
-	assert_eq(tool.shown_ghosts().size(), 0)
+	assert_true(tool.has_preview())
+	assert_eq(tool.shown_ghosts().size(), 1)
+	tap(Vector2i(-6, 6))
+	assert_null(sim.building_at(Vector2i(-6, 6)))
+	assert_true(tool.has_tool(), "first tap moves preview without placing")
 	tap(Vector2i(-6, 6))
 	assert_eq(sim.building_at(Vector2i(-6, 6)).def.id, &"conveyor")
-	assert_true(tool.has_tool(), "the conveyor stays selected")
+	assert_false(tool.has_tool(), "the conveyor drops after confirming")

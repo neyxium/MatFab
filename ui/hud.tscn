@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
+[ext_resource type="Texture2D" uid="uid://h72k0twhlvqa" path="res://assets/real/pause.png" id="2_pause"]
 
 [node name="Hud" type="Control"]
 layout_mode = 3
@@ -48,55 +49,154 @@ horizontal_alignment = 1
 layout_mode = 2
 mouse_filter = 2
 
-[node name="GoalList" type="VBoxContainer" parent="TopLeft/GoalPanel"]
+[node name="GoalLayout" type="HBoxContainer" parent="TopLeft/GoalPanel"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 6
+
+[node name="GoalList" type="VBoxContainer" parent="TopLeft/GoalPanel/GoalLayout"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="GoalToggle" type="Button" parent="TopLeft/GoalPanel/GoalLayout"]
+visible = false
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 0
+focus_mode = 0
+theme_override_font_sizes/font_size = 18
+text = "▼"
 
 [node name="PauseButton" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -186.0
+offset_left = -72.0
 offset_top = 16.0
 offset_right = -16.0
-offset_bottom = 80.0
+offset_bottom = 72.0
 grow_horizontal = 0
 focus_mode = 0
-theme_override_font_sizes/font_size = 24
-text = "Premor"
+tooltip_text = "Premor"
+icon = ExtResource("2_pause")
+icon_alignment = 1
+expand_icon = true
 
-[node name="InfoButton" type="Button" parent="."]
+[node name="BuildPanel" type="PanelContainer" parent="."]
 layout_mode = 1
-anchors_preset = 1
+anchors_preset = 3
 anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -312.0
-offset_top = 16.0
-offset_right = -198.0
-offset_bottom = 80.0
-grow_horizontal = 0
-focus_mode = 0
-theme_override_font_sizes/font_size = 24
-text = "Info"
-
-[node name="Toolbar" type="PanelContainer" parent="."]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -16.0
 offset_bottom = -16.0
-grow_horizontal = 2
+grow_horizontal = 0
 grow_vertical = 0
-mouse_filter = 2
+mouse_filter = 0
 
-[node name="Slots" type="HBoxContainer" parent="Toolbar"]
+[node name="Content" type="VBoxContainer" parent="BuildPanel"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="HeaderMargin" type="MarginContainer" parent="BuildPanel/Content"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="HeaderRow" type="HBoxContainer" parent="BuildPanel/Content/HeaderMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SelectedIcon" type="TextureRect" parent="BuildPanel/Content/HeaderMargin/HeaderRow"]
+visible = false
+texture_filter = 1
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 8
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SelectedName" type="Label" parent="BuildPanel/Content/HeaderMargin/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+vertical_alignment = 1
+
+[node name="HelpButton" type="Button" parent="BuildPanel/Content/HeaderMargin/HeaderRow"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 18
+text = "?"
+
+[node name="HeaderDivider" type="ColorRect" parent="BuildPanel/Content"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.28, 0.28, 0.28, 1)
+
+[node name="Body" type="HBoxContainer" parent="BuildPanel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="LeftColumn" type="VBoxContainer" parent="BuildPanel/Content/Body"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="BlocksMargin" type="MarginContainer" parent="BuildPanel/Content/Body/LeftColumn"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="BlockGrid" type="GridContainer" parent="BuildPanel/Content/Body/LeftColumn/BlocksMargin"]
+custom_minimum_size = Vector2(204, 148)
+layout_mode = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+columns = 4
+
+[node name="ToolsDivider" type="ColorRect" parent="BuildPanel/Content/Body/LeftColumn"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.28, 0.28, 0.28, 1)
+
+[node name="ToolsMargin" type="MarginContainer" parent="BuildPanel/Content/Body/LeftColumn"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
+
+[node name="ToolRow" type="HBoxContainer" parent="BuildPanel/Content/Body/LeftColumn/ToolsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="BodyDivider" type="ColorRect" parent="BuildPanel/Content/Body"]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.28, 0.28, 0.28, 1)
+
+[node name="CategoriesMargin" type="MarginContainer" parent="BuildPanel/Content/Body"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="CategoryColumn" type="VBoxContainer" parent="BuildPanel/Content/Body/CategoriesMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
 
 [node name="BlockInfo" type="PanelContainer" parent="."]
 visible = false
@@ -107,9 +207,9 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -260.0
-offset_top = -124.0
+offset_top = -20.0
 offset_right = 260.0
-offset_bottom = -124.0
+offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2

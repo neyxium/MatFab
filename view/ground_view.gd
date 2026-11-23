@@ -3,6 +3,7 @@ class_name GroundView extends Node2D
 const GROUND_TILE := preload("res://assets/real/background.png")
 const ORE_TEXT_COLOR := Color(1, 1, 1, 0.85)
 const ORE_FONT_SIZE := 30
+const FONT := preload("res://assets/fonts/Conthrax-SemiBold.otf")
 
 var sim: Simulation
 
@@ -31,4 +32,4 @@ func _draw() -> void:
 
 func draw_centered_text(rect: Rect2, text: String, font_size: int, color: Color) -> void:
 	var baseline := rect.position + Vector2(0, rect.size.y * 0.5 + font_size * 0.35)
-	draw_string(ThemeDB.fallback_font, baseline, text, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, font_size, color)
+	draw_string(FONT, baseline, text, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, font_size, color)
