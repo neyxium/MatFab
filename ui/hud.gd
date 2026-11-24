@@ -46,11 +46,13 @@ var select_button: Button
 # The block whose description is above the build panel, or null.
 var info_def: BuildingDef
 var _target_time := 0.0
+var _par_cost := 0
 var goals_expanded := false
 
 @onready var timer_panel: PanelContainer = $TopLeft/TimerPanel
 @onready var time_label: Label = $TopLeft/TimerPanel/TimerRows/TimeLabel
 @onready var best_time_label: Label = $TopLeft/TimerPanel/TimerRows/BestTimeLabel
+@onready var cost_label: Label = $TopLeft/TimerPanel/TimerRows/CostLabel
 @onready var goal_panel: PanelContainer = $TopLeft/GoalPanel
 @onready var goal_list: VBoxContainer = $TopLeft/GoalPanel/GoalLayout/GoalList
 @onready var goal_toggle: Button = $TopLeft/GoalPanel/GoalLayout/GoalToggle
@@ -93,6 +95,22 @@ func update_timer(elapsed_time: float) -> void:
 	else:
 		time_label.text = Game.format_time(elapsed_time)
 		time_label.remove_theme_color_override("font_color")
+
+
+func show_cost(par_cost: int) -> void:
+	_par_cost = par_cost
+	cost_label.visible = true
+
+
+func update_cost(cost: int) -> void:
+	if _par_cost > 0:
+		cost_label.text = "Bloki: %d / %d" % [cost, _par_cost]
+	else:
+		cost_label.text = "Bloki: %d" % cost
+	if _par_cost > 0 and cost > _par_cost:
+		cost_label.add_theme_color_override("font_color", OVER_TIME_COLOR)
+	else:
+		cost_label.remove_theme_color_override("font_color")
 
 
 func show_goals(goal_tracker: GoalTracker) -> void:

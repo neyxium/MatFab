@@ -105,9 +105,11 @@ func continue_level() -> LevelDef:
 
 
 func complete_level() -> void:
-	if not completed_levels.has(level.id):
+	var first_clear := not completed_levels.has(level.id)
+	if first_clear:
 		completed_levels.append(level.id)
 	last_result = current_result()
+	last_result["first_clear"] = first_clear
 	last_result["new_record"] = keep_records(level.id, last_result)
 	paused = true
 	save_world()
@@ -117,7 +119,9 @@ func complete_level() -> void:
 
 # The open level rated on its current build cost and time.
 func current_result() -> Dictionary:
-	return LevelRating.rate(level, sim.build_cost(), elapsed_time)
+	var result := LevelRating.rate(level, sim.build_cost(), elapsed_time)
+	result["id"] = level.id
+	return result
 
 
 func keep_records(id: StringName, result: Dictionary) -> bool:
