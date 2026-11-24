@@ -70,6 +70,15 @@ func offer(cell: Vector2i, side: int, number: int) -> bool:
 	return behavior != null and behavior.accept(target, target_cell, Ports.opposite_side(side), number)
 
 
+# Sum of BuildingDef.cost over every building but the mothership
+func build_cost() -> int:
+	var total := 0
+	for building in buildings:
+		if building.def.behavior != BuildingDef.Behavior.MOTHERSHIP:
+			total += building.def.cost
+	return total
+
+
 func building_at(cell: Vector2i) -> BuildingState:
 	return cells.get(cell)
 

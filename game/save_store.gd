@@ -17,21 +17,30 @@ func world_path(level_id: StringName) -> String:
 	return root.path_join("worlds").path_join("%s.sav" % level_id)
 
 
-func save_progress(completed: Array[StringName], last_played: StringName, best_times: Dictionary[StringName, float] = {}) -> void:
-	write(progress_path(), {"completed": completed, "last_played": last_played, "best_times": best_times})
+func save_progress(progress: Dictionary) -> void:
+	write(progress_path(), progress)
 
 
-# {"completed": Array[StringName], "last_played": StringName, "best_times": Dictionary[StringName, float]}; empty values without a file.
 func load_progress() -> Dictionary:
 	var stored: Variant = read(progress_path())
 	var completed: Array[StringName] = []
 	var last_played := &""
 	var best_times: Dictionary[StringName, float] = {}
+	var best_stars: Dictionary[StringName, int] = {}
+	var best_cost: Dictionary[StringName, int] = {}
 	if stored is Dictionary:
 		completed.assign(stored.get("completed", []))
 		last_played = stored.get("last_played", &"")
 		best_times.assign(stored.get("best_times", {}))
-	return {"completed": completed, "last_played": last_played, "best_times": best_times}
+		best_stars.assign(stored.get("best_stars", {}))
+		best_cost.assign(stored.get("best_cost", {}))
+	return {
+		"completed": completed,
+		"last_played": last_played,
+		"best_times": best_times,
+		"best_stars": best_stars,
+		"best_cost": best_cost,
+	}
 
 
 func has_world(level_id: StringName) -> bool:
