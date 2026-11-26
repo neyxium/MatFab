@@ -30,3 +30,4 @@ size = Vector2i(2, 1)
 inputs = Array[ExtResource("1_port")]([SubResource("Resource_in0"), SubResource("Resource_in1")])
 outputs = Array[ExtResource("1_port")]([SubResource("Resource_out0")])
 duration = 0.25
+cost = 2

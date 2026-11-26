@@ -20,3 +20,4 @@ symbol = "√a"
 inputs = Array[ExtResource("1_3sbdj")]([SubResource("Resource_lloll")])
 outputs = Array[ExtResource("1_3sbdj")]([SubResource("Resource_kufgm")])
 operation = &"square_root"
+cost = 5

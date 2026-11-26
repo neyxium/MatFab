@@ -49,7 +49,7 @@ horizontal_alignment = 1
 visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "Bloki: 0"
+text = "Cena: 0"
 horizontal_alignment = 1
 
 [node name="GoalPanel" type="PanelContainer" parent="TopLeft"]

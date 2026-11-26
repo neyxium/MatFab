@@ -47,6 +47,7 @@ var select_button: Button
 var info_def: BuildingDef
 var _target_time := 0.0
 var _par_cost := 0
+var _budget := 0
 var goals_expanded := false
 
 @onready var timer_panel: PanelContainer = $TopLeft/TimerPanel
@@ -97,17 +98,23 @@ func update_timer(elapsed_time: float) -> void:
 		time_label.remove_theme_color_override("font_color")
 
 
-func show_cost(par_cost: int) -> void:
+func show_cost(par_cost: int, budget := 0) -> void:
 	_par_cost = par_cost
+	_budget = budget
 	cost_label.visible = true
 
 
 func update_cost(cost: int) -> void:
-	if _par_cost > 0:
-		cost_label.text = "Bloki: %d / %d" % [cost, _par_cost]
+	var over := false
+	if _budget > 0:
+		cost_label.text = "Proračun: %d / %d" % [cost, _budget]
+		over = cost >= _budget
+	elif _par_cost > 0:
+		cost_label.text = "Cena: %d / %d" % [cost, _par_cost]
+		over = cost > _par_cost
 	else:
-		cost_label.text = "Bloki: %d" % cost
-	if _par_cost > 0 and cost > _par_cost:
+		cost_label.text = "Cena: %d" % cost
+	if over:
 		cost_label.add_theme_color_override("font_color", OVER_TIME_COLOR)
 	else:
 		cost_label.remove_theme_color_override("font_color")
@@ -420,7 +427,7 @@ func refresh_toolbar() -> void:
 	if select_button != null:
 		select_button.set_pressed_no_signal(build_tool.mode == BuildTool.Mode.SELECT or build_tool.has_selection())
 	if build_tool.tool_def != null:
-		selected_name.text = build_tool.tool_def.display_name
+		selected_name.text = "%s (%d)" % [build_tool.tool_def.display_name, build_tool.tool_def.cost]
 		selected_icon.texture = build_tool.tool_def.sprite
 		selected_icon.visible = build_tool.tool_def.sprite != null
 	else:
@@ -441,4 +448,4 @@ func refresh_block_info() -> void:
 	block_info.visible = info_def != null
 	if block_info.visible:
 		BarStyle.style_panel(block_info)
-		block_info_text.text = "%s: %s" % [info_def.display_name, info_def.description]
+		block_info_text.text = "%s (cena %d): %s" % [info_def.display_name, info_def.cost, info_def.description]

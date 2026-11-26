@@ -20,3 +20,4 @@ symbol = "a³"
 inputs = Array[ExtResource("1_sxkd5")]([SubResource("Resource_lloll")])
 outputs = Array[ExtResource("1_sxkd5")]([SubResource("Resource_kufgm")])
 operation = &"cube"
+cost = 5

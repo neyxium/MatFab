@@ -12,6 +12,8 @@ var buildings: Array[BuildingState] = []
 var operations := Operations.new()
 var behaviors: Dictionary[int, Behavior] = {}
 var tracker: GoalTracker
+# Most the buildings may cost together; 0 means no limit. from_level copies it from the level.
+var budget := 0
 var stepping := false
 # Buildings already ticked in the running step.
 var ticked: Dictionary[BuildingState, bool] = {}
@@ -36,6 +38,7 @@ static func from_level(level: LevelDef, building_defs: Dictionary[StringName, Bu
 				sim.ore[patch.cell + Vector2i(x, y)] = patch.value
 	sim.place(MOTHERSHIP_ID, Vector2i.ZERO, 0)
 	sim.tracker = GoalTracker.new(level.goals)
+	sim.budget = level.budget
 	return sim
 
 
@@ -97,7 +100,20 @@ func can_place(def_id: StringName, origin: Vector2i, rotation: int) -> bool:
 	for port in def.inputs:
 		if port.source == PortDef.Source.ORE and not ore.has(Ports.world_cell(probe, port)):
 			return false
-	return true
+	return budget <= 0 or added_cost(def, origin) <= budget_left()
+
+
+# What placing `def` at `origin` adds to build_cost(): its cost, less the conveyor it replaces there.
+func added_cost(def: BuildingDef, origin: Vector2i) -> int:
+	var existing: BuildingState = cells.get(origin)
+	if existing != null and replaces(def, existing):
+		return def.cost - existing.def.cost
+	return def.cost
+
+
+# What the budget still allows; -1 when the level has no budget.
+func budget_left() -> int:
+	return -1 if budget <= 0 else budget - build_cost()
 
 
 # A conveyor placed on a conveyor replaces it and keeps its number, so redrawing a line re-routes it.

@@ -25,3 +25,4 @@ size = Vector2i(2, 1)
 inputs = Array[ExtResource("1_3sbdj")]([SubResource("Resource_lloll"), SubResource("Resource_rno3i")])
 outputs = Array[ExtResource("1_3sbdj")]([SubResource("Resource_kufgm")])
 operation = &"gcd"
+cost = 5

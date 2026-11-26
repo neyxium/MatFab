@@ -9,6 +9,7 @@ class_name LevelDef extends Resource
 # Goal time v sekundah (0 ce nima goal time)
 @export var target_time := 0.0
 @export var par_cost := 0
+@export var budget := 0
 # Shown one step at a time in the tutorial panel; shared steps live in data/tutorial/.
 @export var tutorial: Array[TutorialStep] = []
 

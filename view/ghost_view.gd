@@ -23,9 +23,10 @@ func _draw() -> void:
 	for building in build_tool.erase_marks:
 		draw_rect(Grid.cells_rect(building.origin, building.size()), ERASE_COLOR)
 	var ghosts := build_tool.shown_ghosts()
+	var fits := build_tool.ghosts_fit(ghosts)
 	for i in ghosts.size():
 		var ghost := ghosts[i]
-		var tint := Color.WHITE if build_tool.ghost_fits(ghost) else BLOCKED_TINT
+		var tint := Color.WHITE if fits[i] else BLOCKED_TINT
 		var def: BuildingDef = build_tool.sim.defs[ghost.def_id]
 		if def.behavior == BuildingDef.Behavior.CONVEYOR:
 			draw_conveyor(ghost.origin, ghost_input_side(ghosts, i), ghost.rotation, GHOST_ALPHA, tint)

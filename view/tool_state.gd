@@ -105,10 +105,24 @@ func preview_covers(cell: Vector2i) -> bool:
 
 
 func preview_fits() -> bool:
-	for placement in preview_placements():
-		if not ghost_fits(placement):
-			return false
-	return not preview_placements().is_empty()
+	var placements := preview_placements()
+	return not placements.is_empty() and not ghosts_fit(placements).has(false)
+
+
+# Whether each ghost fits, in order. Under a budget each ghost also has to fit in what the ones before it
+# leave, so a drag shows exactly which ghosts the budget lets through.
+func ghosts_fit(placements: Array[Placement]) -> Array[bool]:
+	var left := sim.budget_left()
+	var flags: Array[bool] = []
+	for placement in placements:
+		var fits := ghost_fits(placement)
+		if fits and left >= 0:
+			var added := sim.added_cost(sim.defs[placement.def_id], placement.origin)
+			fits = added <= left
+			if fits:
+				left -= added
+		flags.append(fits)
+	return flags
 
 
 # The ghosts to draw: the drag while one runs, otherwise the preview.

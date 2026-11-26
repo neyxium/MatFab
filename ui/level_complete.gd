@@ -48,7 +48,7 @@ func show_result(result: Dictionary, level: LevelDef, best_time: float, best_cos
 	var elapsed: float = result["elapsed"]
 	grade_label.text = "Ocena: %s" % result["grade"]
 	var lines: PackedStringArray = []
-	var cost_line := "Bloki: %d" % cost
+	var cost_line := "Cena: %d" % cost
 	if level.par_cost > 0:
 		cost_line += " (cilj: %d)" % level.par_cost
 	lines.append(cost_line)
@@ -57,7 +57,7 @@ func show_result(result: Dictionary, level: LevelDef, best_time: float, best_cos
 		time_line += " (cilj: %s)" % Game.format_time(level.target_time)
 	lines.append(time_line)
 	if best_time >= 0.0 and best_cost >= 0:
-		lines.append("Najboljše: %s, %d blokov" % [Game.format_time(best_time), best_cost])
+		lines.append("Najboljše: %s, cena %d" % [Game.format_time(best_time), best_cost])
 	time_label.text = "\n".join(lines)
 	record_label.visible = result.get("new_record", false) and not result.get("first_clear", false)
 	record_label.text = "Nov rekord!"
@@ -70,7 +70,7 @@ func show_result(result: Dictionary, level: LevelDef, best_time: float, best_cos
 static func hint(level: LevelDef, cost: int, elapsed: float) -> String:
 	var tips: PackedStringArray = []
 	if not LevelRating.meets_cost(level, cost):
-		tips.append("z manj bloki")
+		tips.append("s cenejšo tovarno")
 	if not LevelRating.meets_time(level, elapsed):
 		tips.append("hitreje")
 	if tips.is_empty():

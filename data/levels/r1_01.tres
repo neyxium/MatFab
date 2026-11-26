@@ -20,7 +20,7 @@ cell = Vector2i(6, 3)
 script = ExtResource("5_2s3mb")
 title = "Prvi koraki"
 target_time = 360.0
-par_cost = 25
+par_cost = 35
 ore_patches = Array[ExtResource("4_2y85k")]([SubResource("Resource_g7x37"), SubResource("Resource_70sox")])
 goals = Dictionary[int, int]({
 2: 10,

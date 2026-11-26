@@ -25,3 +25,4 @@ size = Vector2i(2, 1)
 inputs = Array[ExtResource("1_vo6fn")]([SubResource("Resource_lloll"), SubResource("Resource_rno3i")])
 outputs = Array[ExtResource("1_vo6fn")]([SubResource("Resource_kufgm")])
 operation = &"multiply"
+cost = 4

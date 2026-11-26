@@ -37,7 +37,10 @@ func make_row(def: BuildingDef) -> PanelContainer:
 	words.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	words.alignment = BoxContainer.ALIGNMENT_CENTER
 	line.add_child(words)
-	words.add_child(make_label(def.display_name, NAME_FONT_SIZE))
+	var title := def.display_name
+	if def.behavior != BuildingDef.Behavior.MOTHERSHIP:
+		title += "  ·  cena %d" % def.cost
+	words.add_child(make_label(title, NAME_FONT_SIZE))
 	words.add_child(make_label(def.description, TEXT_FONT_SIZE))
 	return row
 

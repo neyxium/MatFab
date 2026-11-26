@@ -15,7 +15,7 @@ func _ready() -> void:
 	hud.show_goals(Game.sim.tracker)
 	hud.show_timer(Game.level.target_time, Game.best_times.get(Game.level.id, -1.0))
 	hud.update_timer(Game.elapsed_time)
-	hud.show_cost(Game.level.par_cost)
+	hud.show_cost(Game.level.par_cost, Game.level.budget)
 	hud.update_cost(Game.sim.build_cost())
 	hud.show_toolbar(world_view.build_tool)
 	hud.pause_pressed.connect(pause)
