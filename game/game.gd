@@ -17,6 +17,9 @@ var paused := false
 # Filled from progress.sav by the save store; level select marks these levels.
 var completed_levels: Array[StringName] = []
 var best_times: Dictionary[StringName, float] = {}
+var best_stars: Dictionary[StringName, int] = {}
+var best_cost: Dictionary[StringName, int] = {}
+var last_result: Dictionary = {}
 var last_played := &""
 var save_store := SaveStore.new()
 var autosave := AutosaveTimer.new()
@@ -30,6 +33,8 @@ func _ready() -> void:
 	var progress := save_store.load_progress()
 	completed_levels.assign(progress["completed"])
 	best_times.assign(progress["best_times"])
+	best_stars.assign(progress["best_stars"])
+	best_cost.assign(progress["best_cost"])
 	last_played = progress["last_played"]
 
 
@@ -100,14 +105,37 @@ func continue_level() -> LevelDef:
 
 
 func complete_level() -> void:
-	if not completed_levels.has(level.id):
+	var first_clear := not completed_levels.has(level.id)
+	if first_clear:
 		completed_levels.append(level.id)
-	if not best_times.has(level.id) or elapsed_time < best_times[level.id]:
-		best_times[level.id] = elapsed_time
+	last_result = current_result()
+	last_result["first_clear"] = first_clear
+	last_result["new_record"] = keep_records(level.id, last_result)
 	paused = true
 	save_world()
 	save_progress()
 	level_completed.emit()
+
+
+# The open level rated on its current build cost and time.
+func current_result() -> Dictionary:
+	var result := LevelRating.rate(level, sim.build_cost(), elapsed_time)
+	result["id"] = level.id
+	return result
+
+
+func keep_records(id: StringName, result: Dictionary) -> bool:
+	var improved := false
+	if not best_times.has(id) or result["elapsed"] < best_times[id]:
+		best_times[id] = result["elapsed"]
+		improved = true
+	if not best_stars.has(id) or result["stars"] > best_stars[id]:
+		best_stars[id] = result["stars"]
+		improved = true
+	if not best_cost.has(id) or result["cost"] < best_cost[id]:
+		best_cost[id] = result["cost"]
+		improved = true
+	return improved
 
 
 func save_world() -> void:
@@ -116,7 +144,13 @@ func save_world() -> void:
 
 
 func save_progress() -> void:
-	save_store.save_progress(completed_levels, last_played, best_times)
+	save_store.save_progress({
+		"completed": completed_levels,
+		"last_played": last_played,
+		"best_times": best_times,
+		"best_stars": best_stars,
+		"best_cost": best_cost,
+	})
 
 
 func close_level() -> void:
@@ -134,6 +168,9 @@ func reset_progress() -> void:
 	paused = false
 	completed_levels.clear()
 	best_times.clear()
+	best_stars.clear()
+	best_cost.clear()
+	last_result = {}
 	last_played = &""
 	seen_block_info.clear()
 	save_store.clear_all()

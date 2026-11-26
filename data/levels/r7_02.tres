@@ -29,6 +29,8 @@ cell = Vector2i(-1, 8)
 [resource]
 script = ExtResource("1_level")
 title = "Potence zmnožkov"
+target_time = 600.0
+par_cost = 60
 grade = 7
 ore_patches = Array[ExtResource("2_ore")]([SubResource("Resource_ore0"), SubResource("Resource_ore1"), SubResource("Resource_ore2")])
 goals = Dictionary[int, int]({

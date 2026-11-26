@@ -27,6 +27,8 @@ cell = Vector2i(-1, 8)
 [resource]
 script = ExtResource("1_level")
 title = "Delitelji"
+target_time = 480.0
+par_cost = 45
 grade = 6
 ore_patches = Array[ExtResource("2_ore")]([SubResource("Resource_ore0"), SubResource("Resource_ore1"), SubResource("Resource_ore2")])
 goals = Dictionary[int, int]({

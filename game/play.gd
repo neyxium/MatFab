@@ -15,6 +15,8 @@ func _ready() -> void:
 	hud.show_goals(Game.sim.tracker)
 	hud.show_timer(Game.level.target_time, Game.best_times.get(Game.level.id, -1.0))
 	hud.update_timer(Game.elapsed_time)
+	hud.show_cost(Game.level.par_cost)
+	hud.update_cost(Game.sim.build_cost())
 	hud.show_toolbar(world_view.build_tool)
 	hud.pause_pressed.connect(pause)
 	hud.info_pressed.connect(open_info)
@@ -37,13 +39,18 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	hud.update_timer(Game.elapsed_time)
+	# Leaving to the menu clears the sim a frame before this scene goes away.
+	if Game.sim != null:
+		hud.update_cost(Game.sim.build_cost())
 
 
 func _on_level_completed() -> void:
 	var best: float = Game.best_times.get(Game.level.id, -1.0)
 	hud.show_timer(Game.level.target_time, best)
 	hud.update_timer(Game.elapsed_time)
-	level_complete.show_time(Game.elapsed_time, best, Game.level.target_time)
+	# Reopening a level finished earlier rates the saved world, since last_result may belong to another level.
+	var result := Game.last_result if Game.last_result.get("id") == Game.level.id else Game.current_result()
+	level_complete.show_result(result, Game.level, best, Game.best_cost.get(Game.level.id, -1))
 	level_complete.show()
 	tutorial_panel.hide()
 

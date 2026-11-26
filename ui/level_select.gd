@@ -26,6 +26,8 @@ func _level_button(level: LevelDef) -> Button:
 	var button := Button.new()
 	var lines: PackedStringArray = [level.title]
 	var details: PackedStringArray = []
+	if Game.best_stars.has(level.id):
+		details.append(LevelRating.star_text(Game.best_stars[level.id]))
 	if Game.best_times.has(level.id):
 		details.append("Najboljši: %s" % Game.format_time(Game.best_times[level.id]))
 	if level.target_time > 0.0:

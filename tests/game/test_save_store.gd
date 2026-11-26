@@ -75,7 +75,7 @@ func test_def_with_a_changed_port_count_loads() -> void:
 
 func test_progress_survives_save_and_load() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(ROOT))
-	store.save_progress([&"r1_01"] as Array[StringName], &"r1_01")
+	store.save_progress({"completed": [&"r1_01"] as Array[StringName], "last_played": &"r1_01"})
 	var progress := store.load_progress()
 	assert_eq(progress["completed"], [&"r1_01"] as Array[StringName])
 	assert_eq(progress["last_played"], &"r1_01")

@@ -15,6 +15,7 @@ enum Behavior { PROCESSOR, CONVEYOR, MOTHERSHIP, SPLITTER, MERGER }
 @export var operation: StringName
 @export var duration := 0.5
 @export var keep_selected := false
+@export var cost := 1
 
 # World saves store this id; renaming the .tres drops saved buildings of this type.
 var id: StringName
