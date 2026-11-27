@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://ewfehg1y82nt"]
+
+[ext_resource type="Script" path="res://ui/hex_tile.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/real/hexagon_1.png" id="2_hex1"]
+[ext_resource type="Texture2D" path="res://assets/real/hexagon_2.png" id="3_hex2"]
+
+[node name="HexTile" type="TextureButton"]
+custom_minimum_size = Vector2(120, 120)
+offset_right = 120.0
+offset_bottom = 120.0
+focus_mode = 0
+toggle_mode = true
+texture_normal = ExtResource("2_hex1")
+texture_pressed = ExtResource("3_hex2")
+ignore_texture_size = true
+stretch_mode = 5
+script = ExtResource("1_script")
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="NumberLabel" type="Label" parent="Center"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 32
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TitleOverlay" type="Label" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 22
+text = "Stopnja 1"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -14,6 +14,7 @@ const PANEL_BG := Color(0, 0, 0, 0.92)
 const PANEL_BORDER := Color(0.28, 0.28, 0.28, 1)
 const ACTIVE_BORDER := Color("ffd37f")
 const SLOT_HOVER := Color(1, 1, 1, 0.12)
+const SPEED_LABELS: Array[String] = ["1x", "2x", "4x"]
 const BLOCK_BUTTON_SIZE := Vector2(44, 44)
 const CATEGORY_BUTTON_SIZE := Vector2(44, 44)
 const TOOL_BUTTON_SIZE := Vector2(44, 44)
@@ -43,11 +44,10 @@ var category_buttons: Dictionary[StringName, Button] = {}
 var slot_buttons: Dictionary[BuildingDef, Button] = {}
 var eraser_button: Button
 var select_button: Button
-# The block whose description is above the build panel, or null.
-var info_def: BuildingDef
 var _target_time := 0.0
 var _par_cost := 0
 var goals_expanded := false
+var speed_index := 0
 
 @onready var timer_panel: PanelContainer = $TopLeft/TimerPanel
 @onready var time_label: Label = $TopLeft/TimerPanel/TimerRows/TimeLabel
@@ -64,14 +64,44 @@ var goals_expanded := false
 @onready var tool_row: HBoxContainer = $BuildPanel/Content/Body/LeftColumn/ToolsMargin/ToolRow
 @onready var category_column: VBoxContainer = $BuildPanel/Content/Body/CategoriesMargin/CategoryColumn
 @onready var pause_button: Button = $PauseButton
-@onready var block_info: PanelContainer = $BlockInfo
-@onready var block_info_text: Label = $BlockInfo/Text
+@onready var speed_button: Button = $SpeedButton
 
 
 func _ready() -> void:
 	pause_button.pressed.connect(pause_pressed.emit)
 	help_button.pressed.connect(info_pressed.emit)
 	goal_toggle.pressed.connect(_toggle_goals)
+	speed_button.pressed.connect(_cycle_speed)
+	_style_speed_button()
+	speed_button.text = SPEED_LABELS[speed_index]
+
+
+func _cycle_speed() -> void:
+	speed_index = (speed_index + 1) % SPEED_LABELS.size()
+	speed_button.text = SPEED_LABELS[speed_index]
+
+
+func _style_speed_button() -> void:
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = PANEL_BG
+	normal.set_border_width_all(0)
+	normal.set_corner_radius_all(12)
+	normal.corner_detail = 1
+	normal.set_content_margin_all(6)
+
+	var hover := normal.duplicate()
+	hover.bg_color = Color(0.08, 0.08, 0.1, 0.94)
+
+	var pressed := hover.duplicate()
+
+	speed_button.add_theme_stylebox_override("normal", normal)
+	speed_button.add_theme_stylebox_override("hover", hover)
+	speed_button.add_theme_stylebox_override("pressed", pressed)
+	speed_button.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+
+	speed_button.add_theme_color_override("font_color", Color.WHITE)
+	speed_button.add_theme_color_override("font_hover_color", Color.WHITE)
+	speed_button.add_theme_color_override("font_pressed_color", Color.WHITE)
 
 
 func show_timer(target_time: float, best_time: float) -> void:
@@ -383,6 +413,17 @@ func _on_block_pressed(def: BuildingDef) -> void:
 		build_tool.select_def(def)
 
 
+func current_info_def() -> BuildingDef:
+	if build_tool == null:
+		return null
+	if build_tool.tool_def != null:
+		return build_tool.tool_def
+	var defs: Array = category_defs.get(active_category, [])
+	if not defs.is_empty():
+		return defs[0]
+	return build_tool.buildable[0] if not build_tool.buildable.is_empty() else null
+
+
 # Blocks without art yet show the same symbol tile they are drawn with on the grid.
 func symbol_tile(def: BuildingDef) -> Label:
 	var tile := Label.new()
@@ -419,6 +460,7 @@ func refresh_toolbar() -> void:
 		eraser_button.set_pressed_no_signal(build_tool.mode == BuildTool.Mode.ERASE)
 	if select_button != null:
 		select_button.set_pressed_no_signal(build_tool.mode == BuildTool.Mode.SELECT or build_tool.has_selection())
+	help_button.visible = build_tool.tool_def != null
 	if build_tool.tool_def != null:
 		selected_name.text = build_tool.tool_def.display_name
 		selected_icon.texture = build_tool.tool_def.sprite
@@ -426,19 +468,3 @@ func refresh_toolbar() -> void:
 	else:
 		selected_name.text = CATEGORY_LABELS.get(active_category, "")
 		selected_icon.visible = false
-	refresh_block_info()
-
-
-# The first time a block becomes the tool, a line above the bottom edge says what it does until the tool changes.
-# After that the Info window holds every description.
-func refresh_block_info() -> void:
-	var def := build_tool.tool_def
-	if def != info_def:
-		var first_time := def != null and def.description != "" and not Game.seen_block_info.has(def.id)
-		info_def = def if first_time else null
-		if first_time:
-			Game.seen_block_info.append(def.id)
-	block_info.visible = info_def != null
-	if block_info.visible:
-		BarStyle.style_panel(block_info)
-		block_info_text.text = "%s: %s" % [info_def.display_name, info_def.description]

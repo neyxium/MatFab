@@ -91,6 +91,21 @@ icon = ExtResource("2_pause")
 icon_alignment = 1
 expand_icon = true
 
+[node name="SpeedButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -76.0
+offset_right = 92.0
+offset_bottom = -16.0
+grow_vertical = 0
+focus_mode = 0
+tooltip_text = "Hitrost"
+theme_override_font_sizes/font_size = 24
+text = "1x"
+
 [node name="BuildPanel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 3
@@ -116,6 +131,7 @@ theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 8
 
 [node name="HeaderRow" type="HBoxContainer" parent="BuildPanel/Content/HeaderMargin"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 theme_override_constants/separation = 10
 
@@ -136,6 +152,7 @@ theme_override_font_sizes/font_size = 18
 vertical_alignment = 1
 
 [node name="HelpButton" type="Button" parent="BuildPanel/Content/HeaderMargin/HeaderRow"]
+visible = false
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 focus_mode = 0
@@ -204,25 +221,3 @@ theme_override_constants/margin_bottom = 6
 [node name="CategoryColumn" type="VBoxContainer" parent="BuildPanel/Content/Body/CategoriesMargin"]
 layout_mode = 2
 theme_override_constants/separation = 6
-
-[node name="BlockInfo" type="PanelContainer" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -260.0
-offset_top = -20.0
-offset_right = 260.0
-offset_bottom = -20.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-
-[node name="Text" type="Label" parent="BlockInfo"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-horizontal_alignment = 1
-autowrap_mode = 3

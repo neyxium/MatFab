@@ -1,0 +1,147 @@
+[gd_scene format=3 uid="uid://cfhu75r61e1bv"]
+
+[ext_resource type="Script" uid="uid://kwufqpoe5k17" path="res://ui/hex_map.gd" id="1_map"]
+[ext_resource type="Theme" uid="uid://ii4wv0nusqf3" path="res://ui/menu_theme.tres" id="2_theme"]
+[ext_resource type="Texture2D" uid="uid://nm63c418ag5u" path="res://assets/real/galaxy.jpg" id="3_bg"]
+[ext_resource type="Texture2D" uid="uid://dxehwi7ri1m3c" path="res://assets/real/play.png" id="4_play"]
+
+[node name="HexMap" type="Control" unique_id=1884108939]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_map")
+
+[node name="Background" type="TextureRect" parent="." unique_id=951772222]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.25
+anchor_top = -0.25
+anchor_right = 1.25
+anchor_bottom = 1.25
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="MapArea" type="Control" parent="." unique_id=405018934]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MapContent" type="Control" parent="MapArea" unique_id=1351529312]
+unique_name_in_owner = true
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="SchoolPanel" type="PanelContainer" parent="." unique_id=783850415]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+
+[node name="SchoolList" type="VBoxContainer" parent="SchoolPanel" unique_id=482793915]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="PrimaryButton" type="Button" parent="SchoolPanel/SchoolList" unique_id=151109682]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 46)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+toggle_mode = true
+button_pressed = true
+text = "Osnovna šola"
+
+[node name="SecondaryButton" type="Button" parent="SchoolPanel/SchoolList" unique_id=167344845]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 46)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+toggle_mode = true
+text = "Srednja šola"
+
+[node name="BackButton" type="Button" parent="." unique_id=661072386]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -70.0
+offset_right = 166.0
+offset_bottom = -16.0
+grow_vertical = 0
+focus_mode = 0
+theme_override_font_sizes/font_size = 22
+text = "Nazaj"
+
+[node name="BottomBar" type="PanelContainer" parent="." unique_id=871562405]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Margins" type="MarginContainer" parent="BottomBar" unique_id=648792360]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 18
+
+[node name="Info" type="VBoxContainer" parent="BottomBar/Margins" unique_id=601063043]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="SelectedTitle" type="Label" parent="BottomBar/Margins/Info" unique_id=743187218]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.827451, 0.49803922, 1)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+
+[node name="TitleDivider" type="ColorRect" parent="BottomBar/Margins/Info" unique_id=1930111879]
+custom_minimum_size = Vector2(0, 3)
+layout_mode = 2
+mouse_filter = 2
+color = Color(1, 0.827451, 0.49803922, 1)
+
+[node name="SelectedDesc" type="Label" parent="BottomBar/Margins/Info" unique_id=459631185]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+
+[node name="StartButton" type="Button" parent="BottomBar/Margins/Info" unique_id=1018714672]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 54)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 22
+text = "Začni"
+icon = ExtResource("4_play")
+expand_icon = true

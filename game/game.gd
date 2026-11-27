@@ -4,7 +4,7 @@ signal level_completed
 
 const SCREENS: Dictionary[StringName, String] = {
 	&"main_menu": "res://ui/main_menu.tscn",
-	&"level_select": "res://ui/level_select.tscn",
+	&"level_select": "res://ui/hex_map.tscn",
 	&"settings": "res://ui/settings_menu.tscn",
 	&"play": "res://game/play.tscn",
 }
@@ -23,8 +23,6 @@ var last_result: Dictionary = {}
 var last_played := &""
 var save_store := SaveStore.new()
 var autosave := AutosaveTimer.new()
-# Blocks whose description the HUD has already shown once; the Info window shows them again.
-var seen_block_info: Array[StringName] = []
 
 
 func _ready() -> void:
@@ -172,7 +170,6 @@ func reset_progress() -> void:
 	best_cost.clear()
 	last_result = {}
 	last_played = &""
-	seen_block_info.clear()
 	save_store.clear_all()
 
 

@@ -21,13 +21,13 @@ script = ExtResource("1_play")
 
 [node name="ActionBar" parent="UiLayer" instance=ExtResource("4_bar")]
 
+[node name="PreviewButtons" parent="UiLayer" instance=ExtResource("9_preview")]
+
 [node name="TutorialPanel" parent="UiLayer" instance=ExtResource("7_tutorial")]
 visible = false
 
 [node name="BlockInfoMenu" parent="UiLayer" instance=ExtResource("8_info")]
 visible = false
-
-[node name="PreviewButtons" parent="UiLayer" instance=ExtResource("9_preview")]
 
 [node name="PauseMenu" parent="UiLayer" instance=ExtResource("5_pause")]
 visible = false

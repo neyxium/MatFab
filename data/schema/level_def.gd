@@ -1,6 +1,9 @@
 class_name LevelDef extends Resource
 
+enum SchoolType { PRIMARY = 0, SECONDARY = 1 }
+
 @export var title := ""
+@export var type: SchoolType = SchoolType.PRIMARY
 @export var grade := 1
 @export var map_size := Vector2i(40, 30)
 @export var ore_patches: Array[OrePatch] = []

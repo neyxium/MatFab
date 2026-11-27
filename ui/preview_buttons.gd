@@ -28,7 +28,7 @@ func show_tool(tool: BuildTool, camera: CameraRig) -> void:
 
 # Follows the preview every frame: centered above it, kept on screen, hidden while a drag runs.
 func _process(_delta: float) -> void:
-	var shown := build_tool != null and build_tool.has_preview() and not (build_tool.gesture_active and build_tool.drag_cells.size() > 1)
+	var shown := not Game.paused and build_tool != null and build_tool.has_preview() and not (build_tool.gesture_active and build_tool.drag_cells.size() > 1)
 	row.visible = shown
 	if not shown:
 		return

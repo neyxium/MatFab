@@ -78,13 +78,14 @@ func resume() -> void:
 	pause_menu.hide()
 
 
-# The Info window lists the mothership and every block the level offers; the sim waits while it is open.
+# The Info window shows details for the currently selected block; the sim waits while it is open.
 func open_info() -> void:
+	var def := hud.current_info_def()
+	if def == null:
+		return
 	world_view.build_tool.cancel_gesture()
 	Game.paused = true
-	var defs: Array[BuildingDef] = [Registry.buildings[&"mothership"]]
-	defs.append_array(Game.level.buildable)
-	block_info_menu.show_blocks(defs)
+	block_info_menu.show_block(def)
 
 
 func close_info() -> void:
