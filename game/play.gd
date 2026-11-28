@@ -18,8 +18,10 @@ func _ready() -> void:
 	hud.show_cost(Game.level.par_cost)
 	hud.update_cost(Game.sim.build_cost())
 	hud.show_toolbar(world_view.build_tool)
+	hud.set_speed(Game.sim_speed)
 	hud.pause_pressed.connect(pause)
 	hud.info_pressed.connect(open_info)
+	hud.speed_changed.connect(_on_speed_changed)
 	block_info_menu.close_pressed.connect(close_info)
 	action_bar.show_tool(world_view.build_tool, Registry.controls_sorted)
 	preview_buttons.show_tool(world_view.build_tool, world_view.camera_rig)
@@ -42,6 +44,10 @@ func _process(_delta: float) -> void:
 	# Leaving to the menu clears the sim a frame before this scene goes away.
 	if Game.sim != null:
 		hud.update_cost(Game.sim.build_cost())
+
+
+func _on_speed_changed(speed: float) -> void:
+	Game.sim_speed = speed
 
 
 func _on_level_completed() -> void:

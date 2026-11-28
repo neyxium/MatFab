@@ -13,6 +13,7 @@ var level: LevelDef
 var sim: Simulation
 var clock := SimClock.new()
 var elapsed_time := 0.0
+var sim_speed := 1.0
 var paused := false
 # Filled from progress.sav by the save store; level select marks these levels.
 var completed_levels: Array[StringName] = []
@@ -43,9 +44,12 @@ func _physics_process(delta: float) -> void:
 func step_sim(delta: float) -> void:
 	if sim == null or paused or (sim.tracker != null and sim.tracker.is_complete()):
 		return
-	elapsed_time += delta
-	for step in clock.advance(delta):
+	var sim_delta := delta * sim_speed
+	elapsed_time += sim_delta
+	for step in clock.advance(sim_delta):
 		sim.step()
+		if sim.tracker != null and sim.tracker.is_complete():
+			break
 	if autosave.advance(delta):
 		save_world()
 
@@ -91,6 +95,7 @@ func load_level(level_def: LevelDef, from_save: bool) -> void:
 		elapsed_time = save_store.load_world_time(level.id)
 	clock = SimClock.new()
 	autosave.restart()
+	sim_speed = 1.0
 	paused = false
 	sim.tracker.completed.connect(complete_level)
 	last_played = level.id
@@ -156,6 +161,7 @@ func close_level() -> void:
 	level = null
 	sim = null
 	elapsed_time = 0.0
+	sim_speed = 1.0
 	paused = false
 
 
@@ -163,6 +169,7 @@ func reset_progress() -> void:
 	level = null
 	sim = null
 	elapsed_time = 0.0
+	sim_speed = 1.0
 	paused = false
 	completed_levels.clear()
 	best_times.clear()

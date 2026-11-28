@@ -2,6 +2,7 @@ class_name Hud extends Control
 
 signal pause_pressed
 signal info_pressed
+signal speed_changed(speed: float)
 
 const GOAL_FONT_SIZE := 24
 const GOAL_ROW_WIDTH := 170
@@ -15,6 +16,7 @@ const PANEL_BORDER := Color(0.28, 0.28, 0.28, 1)
 const ACTIVE_BORDER := Color("ffd37f")
 const SLOT_HOVER := Color(1, 1, 1, 0.12)
 const SPEED_LABELS: Array[String] = ["1x", "2x", "4x"]
+const SPEED_VALUES: Array[float] = [1.0, 2.0, 4.0]
 const BLOCK_BUTTON_SIZE := Vector2(44, 44)
 const CATEGORY_BUTTON_SIZE := Vector2(44, 44)
 const TOOL_BUTTON_SIZE := Vector2(44, 44)
@@ -78,6 +80,16 @@ func _ready() -> void:
 
 func _cycle_speed() -> void:
 	speed_index = (speed_index + 1) % SPEED_LABELS.size()
+	speed_button.text = SPEED_LABELS[speed_index]
+	speed_changed.emit(SPEED_VALUES[speed_index])
+
+
+func set_speed(speed: float) -> void:
+	speed_index = 0
+	for i in SPEED_VALUES.size():
+		if is_equal_approx(SPEED_VALUES[i], speed):
+			speed_index = i
+			break
 	speed_button.text = SPEED_LABELS[speed_index]
 
 
