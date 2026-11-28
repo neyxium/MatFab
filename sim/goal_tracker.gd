@@ -42,4 +42,7 @@ func progress(number: int) -> int:
 
 
 func is_complete() -> bool:
-	return current_goal() == -1
+	for number in goals:
+		if received.get(number, 0) < goals[number]:
+			return false
+	return true

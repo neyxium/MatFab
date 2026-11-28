@@ -9,6 +9,8 @@
 [ext_resource type="Resource" path="res://data/blocks/gcd.tres" id="7_gcd"]
 [ext_resource type="Resource" path="res://data/blocks/splitter.tres" id="8_splitter"]
 [ext_resource type="Resource" path="res://data/blocks/merger.tres" id="9_merger"]
+[ext_resource type="Resource" path="res://data/blocks/tunnel_in.tres" id="10_tunnel_in"]
+[ext_resource type="Resource" path="res://data/blocks/tunnel_out.tres" id="11_tunnel_out"]
 
 [sub_resource type="Resource" id="Resource_ore0"]
 script = ExtResource("2_ore")
@@ -39,4 +41,4 @@ goals = Dictionary[int, int]({
 30: 5,
 60: 5
 })
-buildable = Array[ExtResource("3_building")]([ExtResource("4_conveyor"), ExtResource("5_miner"), ExtResource("6_lcm"), ExtResource("7_gcd"), ExtResource("8_splitter"), ExtResource("9_merger")])
+buildable = Array[ExtResource("3_building")]([ExtResource("4_conveyor"), ExtResource("5_miner"), ExtResource("6_lcm"), ExtResource("7_gcd"), ExtResource("8_splitter"), ExtResource("9_merger"), ExtResource("10_tunnel_in"), ExtResource("11_tunnel_out")])

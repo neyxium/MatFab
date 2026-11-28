@@ -25,6 +25,9 @@ func _init(building_defs: Dictionary[StringName, BuildingDef], map_bounds: Rect2
 	behaviors[BuildingDef.Behavior.CONVEYOR] = ConveyorBehavior.new(self)
 	behaviors[BuildingDef.Behavior.SPLITTER] = SplitterBehavior.new(self)
 	behaviors[BuildingDef.Behavior.MERGER] = MergerBehavior.new(self)
+	var tunnel := TunnelBehavior.new(self)
+	behaviors[BuildingDef.Behavior.TUNNEL_IN] = tunnel
+	behaviors[BuildingDef.Behavior.TUNNEL_OUT] = tunnel
 
 
 # Every cell in level data is relative to the mothership, which sits at (0, 0).

@@ -79,6 +79,11 @@ func _io_summary(def: BuildingDef) -> Dictionary:
 				"input": _item_spec("Število (×2)", "#", false, rate),
 				"output": _item_spec("Število", "#", false, rate),
 			}
+		BuildingDef.Behavior.TUNNEL_IN, BuildingDef.Behavior.TUNNEL_OUT:
+			return {
+				"input": _item_spec("Število", "#", false, rate),
+				"output": _item_spec("Število", "#", false, rate),
+			}
 		_:
 			var in_count := def.inputs.size()
 			var out_count := def.outputs.size()

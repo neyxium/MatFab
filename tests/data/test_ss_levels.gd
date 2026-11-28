@@ -4,7 +4,7 @@ extends GutTest
 
 const LEVEL_IDS: Array[StringName] = [&"ss_01", &"ss_02", &"ss_03", &"ss_04", &"ss_05"]
 # Blocks that only move or mine numbers; the reachability search skips them.
-const NON_MATH_BLOCKS: Array[StringName] = [&"conveyor", &"miner", &"splitter", &"merger"]
+const NON_MATH_BLOCKS: Array[StringName] = [&"conveyor", &"miner", &"splitter", &"merger", &"tunnel_in", &"tunnel_out"]
 const MAX_STEPS := 3
 const MAX_BUILDABLE := 10
 

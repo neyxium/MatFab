@@ -5,6 +5,8 @@ const BLOCKED_TINT := Color(1.0, 0.35, 0.35)
 const ERASE_COLOR := Color(1.0, 0.2, 0.2, 0.45)
 const SELECTION_FILL := Color(0.35, 0.65, 1.0, 0.18)
 const SELECTION_BORDER := Color(0.45, 0.75, 1.0, 0.9)
+const TUNNEL_LINK_COLOR := Color("ffd37f")
+const TUNNEL_RANGE_COLOR := Color(1.0, 0.83, 0.5, 0.35)
 
 var build_tool: BuildTool
 
@@ -31,6 +33,20 @@ func _draw() -> void:
 			draw_conveyor(ghost.origin, ghost_input_side(ghosts, i), ghost.rotation, GHOST_ALPHA, tint)
 		else:
 			draw_placeholder(def, ghost.origin, ghost.rotation, GHOST_ALPHA, tint)
+			if def.behavior == BuildingDef.Behavior.TUNNEL_IN or def.behavior == BuildingDef.Behavior.TUNNEL_OUT:
+				draw_tunnel_link(ghost.origin, ghost.rotation, def.behavior == BuildingDef.Behavior.TUNNEL_IN)
+
+
+func draw_tunnel_link(origin: Vector2i, rotation: int, is_in: bool) -> void:
+	var front := Ports.rotate_side(PortDef.Side.UP, rotation)
+	var start := Grid.cell_center(origin)
+	var partner := TunnelBehavior.find_pair(build_tool.sim, origin, front, is_in)
+	if partner != null:
+		draw_dashed_line(start, Grid.cell_center(partner.origin), TUNNEL_LINK_COLOR, 4.0, 10.0)
+	else:
+		var dir := Ports.direction(front) * (1 if is_in else -1)
+		var end := Grid.cell_center(origin + dir * TunnelBehavior.MAX_DISTANCE)
+		draw_dashed_line(start, end, TUNNEL_RANGE_COLOR, 3.0, 10.0)
 
 
 # A conveyor ghost is drawn fed from the ghost before it, which makes the corners of a drag visible.

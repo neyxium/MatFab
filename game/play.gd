@@ -108,13 +108,12 @@ func _input(event: InputEvent) -> void:
 	var tracker := Game.sim.tracker
 	match event.physical_keycode:
 		KEY_1, KEY_KP_1:
-			var goal := tracker.current_goal()
-			if goal != -1:
-				tracker.receive(goal)
+			if not tracker.is_complete():
+				tracker.receive(tracker.current_goal())
 			get_viewport().set_input_as_handled()
 		KEY_2, KEY_KP_2:
-			var goal := tracker.current_goal()
-			if goal != -1:
+			if not tracker.is_complete():
+				var goal := tracker.current_goal()
 				for _i in tracker.goals[goal] - tracker.progress(goal):
 					tracker.receive(goal)
 			get_viewport().set_input_as_handled()

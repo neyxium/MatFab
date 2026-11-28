@@ -32,14 +32,14 @@ func test_ore_3_minus_ore_1_feeds_2() -> void:
 	assert_false(sim.tracker.received.has(4))
 
 
-func test_ore_1_minus_ore_3_feeds_nothing() -> void:
+func test_ore_1_minus_ore_3_feeds_negative_2() -> void:
 	sim.ore[Vector2i(-7, -2)] = 3
 	build_subtract_line()
-	assert_eq(sim.tracker.received.size(), 0)
+	assert_gt(sim.tracker.received.get(-2, 0), 0)
 
 
-func test_subtract_returns_only_positive_differences() -> void:
+func test_subtract_supports_zero_and_negative_differences() -> void:
 	var operations := Operations.new()
 	assert_eq(operations.subtract(5, 2), 3)
-	assert_null(operations.subtract(2, 5))
-	assert_null(operations.subtract(3, 3))
+	assert_eq(operations.subtract(2, 5), -3)
+	assert_eq(operations.subtract(3, 3), 0)

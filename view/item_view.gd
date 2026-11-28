@@ -5,6 +5,7 @@ const FONT_SIZE := 26
 const MIN_FONT_SIZE := 10
 const TEXT_COLOR := Color.WHITE
 const OUTLINE_COLOR := Color(0, 0, 0, 0.55)
+const NEGATIVE_OUTLINE_COLOR := Color("d94f4f")
 const FONT := preload("res://assets/fonts/Conthrax-SemiBold.otf")
 
 var sim: Simulation
@@ -31,7 +32,7 @@ func _draw() -> void:
 		match building.def.behavior:
 			BuildingDef.Behavior.CONVEYOR:
 				draw_conveyor_number(building)
-			BuildingDef.Behavior.PROCESSOR, BuildingDef.Behavior.SPLITTER, BuildingDef.Behavior.MERGER:
+			BuildingDef.Behavior.PROCESSOR, BuildingDef.Behavior.SPLITTER, BuildingDef.Behavior.MERGER, BuildingDef.Behavior.TUNNEL_IN, BuildingDef.Behavior.TUNNEL_OUT:
 				draw_processor_numbers(building)
 
 
@@ -61,9 +62,12 @@ func port_point(building: BuildingState, port: PortDef) -> Vector2:
 
 func draw_number(at: Vector2, value: int, scale_factor: float) -> void:
 	var radius := RADIUS * Grid.CELL_SIZE * scale_factor
-	draw_circle(at, radius + 2.0, OUTLINE_COLOR)
+	var outline := NEGATIVE_OUTLINE_COLOR if value < 0 else OUTLINE_COLOR
+	draw_circle(at, radius + 2.0, outline)
 	draw_circle(at, radius, number_color(value))
-	var digits_scale := 0.5 if value >= 1000 else 0.65 if value >= 100 else 1.0
-	var font_size := int(FONT_SIZE * scale_factor * digits_scale)
+	var text := str(value)
+	var chars := text.length()
+	var digits_scale := 0.42 if chars >= 5 else 0.5 if chars == 4 else 0.65 if chars == 3 else 1.0
+	var font_size := maxi(MIN_FONT_SIZE, int(FONT_SIZE * scale_factor * digits_scale))
 	var width := radius * 2.0
-	draw_string(FONT, at + Vector2(-radius, font_size * 0.35), str(value), HORIZONTAL_ALIGNMENT_CENTER, width, font_size, TEXT_COLOR)
+	draw_string(FONT, at + Vector2(-radius, font_size * 0.35), text, HORIZONTAL_ALIGNMENT_CENTER, width, font_size, TEXT_COLOR)

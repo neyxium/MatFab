@@ -251,7 +251,13 @@ func _refresh_goal_visibility() -> void:
 static func category_for(def: BuildingDef) -> StringName:
 	if def.operation == &"mine" or def.id == &"miner":
 		return &"miner"
-	if def.behavior == BuildingDef.Behavior.CONVEYOR or def.behavior == BuildingDef.Behavior.SPLITTER or def.behavior == BuildingDef.Behavior.MERGER:
+	if def.behavior in [
+		BuildingDef.Behavior.CONVEYOR,
+		BuildingDef.Behavior.SPLITTER,
+		BuildingDef.Behavior.MERGER,
+		BuildingDef.Behavior.TUNNEL_IN,
+		BuildingDef.Behavior.TUNNEL_OUT,
+	]:
 		return &"conveyor"
 	return &"production"
 
