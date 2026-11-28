@@ -1,9 +1,9 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://co2wcyht36x13"]
 
-[ext_resource type="Script" path="res://ui/main_menu.gd" id="1_menu"]
-[ext_resource type="Theme" path="res://ui/menu_theme.tres" id="2_theme"]
-[ext_resource type="Texture2D" path="res://assets/real/background.png" id="3_bg"]
-[ext_resource type="Script" path="res://ui/menu_belt.gd" id="4_belt"]
+[ext_resource type="Script" uid="uid://cc6uasp4lg6y" path="res://ui/main_menu.gd" id="1_menu"]
+[ext_resource type="Theme" uid="uid://ii4wv0nusqf3" path="res://ui/menu_theme.tres" id="2_theme"]
+[ext_resource type="Texture2D" uid="uid://bjvafwvt6v1kp" path="res://assets/real/background.png" id="3_bg"]
+[ext_resource type="Script" uid="uid://cl62xoeo54e8o" path="res://ui/menu_belt.gd" id="4_belt"]
 [ext_resource type="Texture2D" uid="uid://dxehwi7ri1m3c" path="res://assets/real/play.png" id="5_play"]
 [ext_resource type="Texture2D" uid="uid://ybs2ti2ut4a3" path="res://assets/real/settings.png" id="6_settings"]
 [ext_resource type="Texture2D" uid="uid://cl6osnkci1hsx" path="res://assets/real/leave.png" id="7_leave"]
@@ -21,19 +21,6 @@ corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
 corner_detail = 1
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tile_hover"]
-bg_color = Color(0.08, 0.08, 0.1, 1)
-border_width_left = 5
-border_width_top = 5
-border_width_right = 5
-border_width_bottom = 5
-border_color = Color(0.68, 0.68, 0.68, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-corner_detail = 1
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tile_pressed"]
 bg_color = Color(0.04, 0.04, 0.05, 1)
 border_width_left = 5
@@ -41,6 +28,19 @@ border_width_top = 5
 border_width_right = 5
 border_width_bottom = 5
 border_color = Color(0.85, 0.85, 0.85, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tile_hover"]
+bg_color = Color(0.08, 0.08, 0.1, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.68, 0.68, 0.68, 1)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
@@ -62,7 +62,7 @@ corner_detail = 1
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=948301524]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -72,7 +72,7 @@ grow_vertical = 2
 theme = ExtResource("2_theme")
 script = ExtResource("1_menu")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=460908264]
 texture_filter = 1
 layout_mode = 1
 anchors_preset = 15
@@ -84,7 +84,7 @@ scale = Vector2(4, 4)
 texture = ExtResource("3_bg")
 stretch_mode = 1
 
-[node name="Belt" type="Control" parent="."]
+[node name="Belt" type="Control" parent="." unique_id=1071334782]
 texture_filter = 1
 layout_mode = 1
 anchors_preset = 12
@@ -96,7 +96,7 @@ grow_horizontal = 2
 grow_vertical = 0
 script = ExtResource("4_belt")
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="CenterContainer" parent="." unique_id=1432755644]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -105,11 +105,11 @@ offset_bottom = -96.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Column" type="VBoxContainer" parent="Center"]
+[node name="Column" type="VBoxContainer" parent="Center" unique_id=1321502844]
 layout_mode = 2
 theme_override_constants/separation = 28
 
-[node name="Title" type="Label" parent="Center/Column"]
+[node name="Title" type="Label" parent="Center/Column" unique_id=1348708081]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/outline_size = 24
@@ -117,16 +117,16 @@ theme_override_font_sizes/font_size = 120
 text = "Matfab"
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="Center/Column"]
+[node name="Spacer" type="Control" parent="Center/Column" unique_id=84506107]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 
-[node name="Buttons" type="HBoxContainer" parent="Center/Column"]
+[node name="Buttons" type="HBoxContainer" parent="Center/Column" unique_id=1256934133]
 layout_mode = 2
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="ContinueButton" type="Button" parent="Center/Column/Buttons"]
+[node name="ContinueButton" type="Button" parent="Center/Column/Buttons" unique_id=1591799457]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
@@ -136,7 +136,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_tile_hover")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_tile_disabled")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
 
-[node name="Content" type="VBoxContainer" parent="Center/Column/Buttons/ContinueButton"]
+[node name="Content" type="VBoxContainer" parent="Center/Column/Buttons/ContinueButton" unique_id=912068846]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -147,7 +147,7 @@ mouse_filter = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="Icon" type="TextureRect" parent="Center/Column/Buttons/ContinueButton/Content"]
+[node name="Icon" type="TextureRect" parent="Center/Column/Buttons/ContinueButton/Content" unique_id=2137648328]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -156,16 +156,15 @@ texture = ExtResource("5_play")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="Center/Column/Buttons/ContinueButton/Content"]
+[node name="Label" type="Label" parent="Center/Column/Buttons/ContinueButton/Content" unique_id=208619942]
 layout_mode = 2
-mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 0
 theme_override_font_sizes/font_size = 17
 text = "Nadaljuj"
 horizontal_alignment = 1
 
-[node name="PlayButton" type="Button" parent="Center/Column/Buttons"]
+[node name="PlayButton" type="Button" parent="Center/Column/Buttons" unique_id=225733123]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
@@ -175,7 +174,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_tile_hover")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_tile_disabled")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
 
-[node name="Content" type="VBoxContainer" parent="Center/Column/Buttons/PlayButton"]
+[node name="Content" type="VBoxContainer" parent="Center/Column/Buttons/PlayButton" unique_id=1880405788]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -186,7 +185,7 @@ mouse_filter = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="Icon" type="TextureRect" parent="Center/Column/Buttons/PlayButton/Content"]
+[node name="Icon" type="TextureRect" parent="Center/Column/Buttons/PlayButton/Content" unique_id=1711019586]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -195,16 +194,15 @@ texture = ExtResource("5_play")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="Center/Column/Buttons/PlayButton/Content"]
+[node name="Label" type="Label" parent="Center/Column/Buttons/PlayButton/Content" unique_id=943942171]
 layout_mode = 2
-mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 0
 theme_override_font_sizes/font_size = 17
 text = "Stopnje"
 horizontal_alignment = 1
 
-[node name="SettingsButton" type="Button" parent="Center/Column/Buttons"]
+[node name="SettingsButton" type="Button" parent="Center/Column/Buttons" unique_id=628216478]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
@@ -214,7 +212,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_tile_hover")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_tile_disabled")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
 
-[node name="Content" type="VBoxContainer" parent="Center/Column/Buttons/SettingsButton"]
+[node name="Content" type="VBoxContainer" parent="Center/Column/Buttons/SettingsButton" unique_id=819560696]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -225,7 +223,7 @@ mouse_filter = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="Icon" type="TextureRect" parent="Center/Column/Buttons/SettingsButton/Content"]
+[node name="Icon" type="TextureRect" parent="Center/Column/Buttons/SettingsButton/Content" unique_id=682944426]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -234,16 +232,15 @@ texture = ExtResource("6_settings")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="Center/Column/Buttons/SettingsButton/Content"]
+[node name="Label" type="Label" parent="Center/Column/Buttons/SettingsButton/Content" unique_id=263763891]
 layout_mode = 2
-mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 0
 theme_override_font_sizes/font_size = 17
 text = "Nastavitve"
 horizontal_alignment = 1
 
-[node name="QuitButton" type="Button" parent="Center/Column/Buttons"]
+[node name="QuitButton" type="Button" parent="Center/Column/Buttons" unique_id=857927837]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
@@ -253,7 +250,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_tile_hover")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_tile_disabled")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
 
-[node name="Content" type="VBoxContainer" parent="Center/Column/Buttons/QuitButton"]
+[node name="Content" type="VBoxContainer" parent="Center/Column/Buttons/QuitButton" unique_id=2001043355]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -264,7 +261,7 @@ mouse_filter = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="Icon" type="TextureRect" parent="Center/Column/Buttons/QuitButton/Content"]
+[node name="Icon" type="TextureRect" parent="Center/Column/Buttons/QuitButton/Content" unique_id=2030375962]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -273,9 +270,8 @@ texture = ExtResource("7_leave")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="Center/Column/Buttons/QuitButton/Content"]
+[node name="Label" type="Label" parent="Center/Column/Buttons/QuitButton/Content" unique_id=1881374347]
 layout_mode = 2
-mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 0
 theme_override_font_sizes/font_size = 17
